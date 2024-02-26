@@ -62,10 +62,7 @@ class Teacher(db.Model):
 
 
 
-
-
-
-
+ 
 
 class Class(db.Model):
 	classid = db.Column(db.Integer, primary_key=True)
@@ -74,6 +71,19 @@ class Class(db.Model):
 	classcapacity = db.Column(db.String(20), nullable=True)
 	classroomnumber = db.Column(db.String(20), nullable=True)
 	teacher_username = db.Column(db.String(30), db.ForeignKey("teacher.teacher_username"), nullable=True)
+
+
+
+
+class StudentAttendance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_username = db.Column(db.String(30), db.ForeignKey('student.student_username'), nullable=False)
+    morning_attendance = db.Column(db.DateTime, nullable=False)
+    evening_attendance = db.Column(db.DateTime, nullable=True)
+    term = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(10), nullable=True)
+    classid = db.Column(db.Integer, db.ForeignKey('class.classid'), nullable=False)
+    comment = db.Column(db.String(200), nullable=True)
 
 
 
