@@ -1,6 +1,8 @@
 from flask import render_template, flash, request, url_for
 from schoolsite import app
-from schoolsite.forms import LoginForm 
+from schoolsite.forms import LoginForm
+from schoolsite.models import Student, Teacher, Class, StudentAttendance, Result, StudentFee, Admin, TeacherAttendance, TeacherHistory, StudentHistory
+
 
 
 
@@ -11,7 +13,7 @@ from schoolsite.forms import LoginForm
 def home():
 	form = LoginForm()
 	if form.validate_on_submit():
-		flash('Hello world')
+		print("Hello World")
 	return render_template("login.html", title="Log in", form=form)
 
 
