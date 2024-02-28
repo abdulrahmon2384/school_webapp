@@ -7,11 +7,11 @@ from schoolsite.models import Teacher, Student, Class
 
 @app.route('/')
 def index():
-    #teacher1 = Teacher(username=1, firstname="John", lastname="Doe")
-    #teacher2 = Teacher(username=2, firstname="Ola", lastname="Oluwa")
-    #teacher3 = Teacher(username=3, firstname="Azeez", lastname="Olumuyiwa")
-    #db.session.add_all([teacher1, teacher2, teacher3])
-    #db.session.commit()
+    teacher1 = Teacher(username=1, firstname="John", lastname="Doe")
+    teacher2 = Teacher(username=2, firstname="Ola", lastname="Oluwa")
+    teacher3 = Teacher(username=3, firstname="Azeez", lastname="Olumuyiwa")
+    db.session.add_all([teacher1, teacher2, teacher3])
+    db.session.commit()
 
     return render_template('index.html', teachers=[1,2,3])
 
