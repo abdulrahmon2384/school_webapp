@@ -26,8 +26,8 @@ class Class(db.Model):
                            db.ForeignKey("teacher.username"),
                            nullable=True)
     students = db.relationship("Student", backref="class_", lazy="dynamic")
-    result = db.relationship("Results", backref='class_result', lazy='dynamic')
-    fees = db.relationship("StudentFee", backref='fee', lazy='dynamic')
+    #result = db.relationship("Results", backref='class_result', lazy='dynamic')
+    fee = db.relationship("StudentFee", backref='fee_paid', lazy='dynamic')
 
 
 
@@ -48,8 +48,8 @@ class Student(db.Model):
     attendance = db.relationship("StudentAttendance",
                                  backref='attendance',
                                  lazy='dynamic')
-    result = db.relationship("Results", backref='class_result', lazy='dynamic')
-    fees = db.relationship("StudentFee", backref='fee', lazy='dynamic')
+    #result = db.relationship("Results", backref='class_result', lazy='dynamic')
+    fee = db.relationship("StudentFee", backref='fee', lazy='dynamic')
 
 
 
@@ -79,7 +79,7 @@ class TeacherAttendance(db.Model):
                                  db.ForeignKey('teacher.username'),
                                  nullable=False)
 
-
+""""
 class Results(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     result_type = db.Column(db.String(50), nullable=False)
@@ -93,6 +93,7 @@ class Results(db.Model):
                                  db.ForeignKey('student.username'),
                                  nullable=False)
     class_id = db.Column(db.Integer, db.ForeignKey('class.classid'), nullable=False)
+"""
 
 
 class StudentFee(db.Model):
