@@ -1,0 +1,40 @@
+.login {
+	margin-top: 100px;
+}
+
+.login h3 {
+	text-align: center;
+}
+
+.form-group {
+	position: relative;
+	margin-bottom: 20px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group select {
+	padding-left: 40px;
+}
+
+.form-group i {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 15px;
+}
+
+.login-btn {
+	width: 100%;
+}
+
+.forgot {
+	display: block;
+	text-align: center;
+	margin-top: 20px;
+}
+
+.create {
+	text-align: center;
+	margin-top: 20px;
+}

@@ -3,6 +3,20 @@ from schoolsite import db
 from datetime import datetime
 
 
+
+class Admin(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String(30), nullable=False)
+	firstname = db.Column(db.String(30), nullable=False)
+	lastname = db.Column(db.String(30), nullable=False)
+	email = db.Column(db.String(50), nullable=True)
+	phonenumber = db.Column(db.String(20), nullable=True)
+	access = db.Column(db.Boolean, nullable=True)
+
+	def __repr__(self):
+		return f"{self.lastname} {self.firstname}"
+
+
 class Teacher(db.Model):
     username = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
@@ -13,8 +27,17 @@ class Teacher(db.Model):
                                     backref="teacher",
                                     lazy="dynamic")
     attendance = db.relationship("TeacherAttendance",
-                                 backref='attendance',
+                                 backref='teacher',
                                  lazy='dynamic')
+    student_historys = db.relationship("StudentHistory",
+                                       backref='teacher',
+                                       lazy='dynamic')
+    historys = db.relationship("TeacherHistory",
+                               backref='teacher',
+                               lazy='dynamic')
+    def __repr__(self):
+        return f"{self.lastname} {self.firstname}"
+
 
 
 class Class(db.Model):
@@ -26,11 +49,11 @@ class Class(db.Model):
                            db.ForeignKey("teacher.username"),
                            nullable=True)
     students = db.relationship("Student", backref="class_", lazy="dynamic")
-    #result = db.relationship("Results", backref='class_result', lazy='dynamic')
-    fee = db.relationship("StudentFee", backref='fee_paid', lazy='dynamic')
-
-
-
+    result = db.relationship("Results", backref='class_', lazy='dynamic')
+    fee = db.relationship("StudentFee", backref='class_', lazy='dynamic')
+    student_historys = db.relationship("StudentHistory",
+                                       backref='class_',
+                                       lazy='dynamic')
 
 
 class Student(db.Model):
@@ -46,10 +69,15 @@ class Student(db.Model):
                          nullable=True)
 
     attendance = db.relationship("StudentAttendance",
-                                 backref='attendance',
+                                 backref='student',
                                  lazy='dynamic')
-    #result = db.relationship("Results", backref='class_result', lazy='dynamic')
-    fee = db.relationship("StudentFee", backref='fee', lazy='dynamic')
+    result = db.relationship("Results", backref='student', lazy='dynamic')
+    fee = db.relationship("StudentFee", backref='student', lazy='dynamic')
+    student_historys = db.relationship("StudentHistory",
+                                       backref='student',
+                                       lazy='dynamic')
+    def __repr__(self):
+        return f"{self.lastname} {self.firstname}"
 
 
 
@@ -79,7 +107,7 @@ class TeacherAttendance(db.Model):
                                  db.ForeignKey('teacher.username'),
                                  nullable=False)
 
-""""
+
 class Results(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     result_type = db.Column(db.String(50), nullable=False)
@@ -92,8 +120,9 @@ class Results(db.Model):
     student_username = db.Column(db.String(50),
                                  db.ForeignKey('student.username'),
                                  nullable=False)
-    class_id = db.Column(db.Integer, db.ForeignKey('class.classid'), nullable=False)
-"""
+    class_id = db.Column(db.Integer,
+                         db.ForeignKey('class.classid'),
+                         nullable=False)
 
 
 class StudentFee(db.Model):
@@ -106,4 +135,40 @@ class StudentFee(db.Model):
     student_username = db.Column(db.String(50),
                                  db.ForeignKey('student.username'),
                                  nullable=False)
-    class_id = db.Column(db.Integer, db.ForeignKey('class.classid'), nullable=False)
+    class_id = db.Column(db.Integer,
+                         db.ForeignKey('class.classid'),
+                         nullable=False)
+
+
+class StudentHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer, nullable=False)
+    fee_paid = db.Column(JSON, nullable=True)
+    exam_result = db.Column(JSON, nullable=True)
+    attendance = db.Column(JSON, nullable=True)
+    school_fees = db.Column(JSON, nullable=True)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    student_username = db.Column(db.String(50),
+                                 db.ForeignKey('student.username'),
+                                 nullable=False)
+    class_id = db.Column(db.Integer,
+                         db.ForeignKey('class.classid'),
+                         nullable=False)
+    teacher_username = db.Column(db.String(50),
+                                 db.ForeignKey("teacher.username"),
+                                 nullable=True)
+
+
+class TeacherHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer, nullable=False)
+    salarys = db.Column(JSON, nullable=True)
+    attendance = db.Column(JSON, nullable=True)
+    termclass = db.Column(JSON, nullable=True)
+    role = db.Column(db.String(20), nullable=True)
+
+    teacher_username = db.Column(db.String(50),
+                                 db.ForeignKey('teacher.username'),
+                                 nullable=False)
+
