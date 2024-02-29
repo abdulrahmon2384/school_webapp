@@ -3,24 +3,29 @@ from schoolsite import db
 from datetime import datetime
 
 
-
 class Admin(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(30), nullable=False)
-	firstname = db.Column(db.String(30), nullable=False)
-	lastname = db.Column(db.String(30), nullable=False)
-	email = db.Column(db.String(50), nullable=True)
-	phonenumber = db.Column(db.String(20), nullable=True)
-	access = db.Column(db.Boolean, nullable=True)
+    __tablename__ = 'admin'
+    username = db.Column(db.String(50), nullable=False)
+    firstname = db.Column(db.String(50), nullable=False)
+    lastname = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(50), nullable=True)
+    phonenumber = db.Column(db.String(20), nullable=True)
+    access = db.Column(db.Boolean, nullable=True)
+	key = db.Column(db.String(50), nullable=True)
+	
 
-	def __repr__(self):
-		return f"{self.lastname} {self.firstname}"
+    def __repr__(self):
+        return f"{self.lastname} {self.firstname}"
 
 
 class Teacher(db.Model):
-    username = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
+
+    role = db.Column(db.String(50), default=None)
+    key = db.Column(db.String(50), nullable=True)
+    access = db.Column(db.Boolean, nullable=True)
 
     classteacher = db.relationship("Class", backref="teacher", lazy="dynamic")
     classstudents = db.relationship("Student",
@@ -35,16 +40,16 @@ class Teacher(db.Model):
     historys = db.relationship("TeacherHistory",
                                backref='teacher',
                                lazy='dynamic')
+
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
-
 
 
 class Class(db.Model):
     classid = db.Column(db.Integer, primary_key=True)
     classname = db.Column(db.String(50), nullable=False)
     classamount = db.Column(db.Integer, nullable=True)
-
+    
     teacher_id = db.Column(db.Integer,
                            db.ForeignKey("teacher.username"),
                            nullable=True)
@@ -57,9 +62,12 @@ class Class(db.Model):
 
 
 class Student(db.Model):
-    username = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
+	key = db.Column(db.String(50), nullable=True)
+	role = db.Column(db.String(50), default="Student")
+
 
     teacher_username = db.Column(db.String(50),
                                  db.ForeignKey("teacher.username"),
@@ -76,10 +84,9 @@ class Student(db.Model):
     student_historys = db.relationship("StudentHistory",
                                        backref='student',
                                        lazy='dynamic')
+
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
-
-
 
 
 class StudentAttendance(db.Model):
@@ -171,4 +178,3 @@ class TeacherHistory(db.Model):
     teacher_username = db.Column(db.String(50),
                                  db.ForeignKey('teacher.username'),
                                  nullable=False)
-
