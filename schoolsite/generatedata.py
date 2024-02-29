@@ -1,12 +1,29 @@
 import random
-from faker import Faker
 from random import choice
 from datetime import datetime, timedelta
 from sqlalchemy import func
 from schoolsite.models import Student, db, Teacher, Class, StudentAttendance, Result, StudentFee, Admin
+from schoolsite import app, bcrypt, fake
 
-fake = Faker()
+
 genders = ['M', 'F']
+
+
+				   
+					   
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def add_student(n):

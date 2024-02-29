@@ -5,13 +5,13 @@ from datetime import datetime
 
 class Admin(db.Model):
     __tablename__ = 'admin'
-    username = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), nullable=True)
     phonenumber = db.Column(db.String(20), nullable=True)
     access = db.Column(db.Boolean, nullable=True)
-	key = db.Column(db.String(50), nullable=True)
+    key = db.Column(db.String(50), nullable=True)
 	
 
     def __repr__(self):
@@ -65,8 +65,8 @@ class Student(db.Model):
     username = db.Column(db.String(50), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
-	key = db.Column(db.String(50), nullable=True)
-	role = db.Column(db.String(50), default="Student")
+    key = db.Column(db.String(50), nullable=True)
+    role = db.Column(db.String(50), default="Student")
 
 
     teacher_username = db.Column(db.String(50),
