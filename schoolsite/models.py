@@ -1,9 +1,20 @@
 from sqlalchemy import JSON
-from schoolsite import db
+from schoolsite import db, login_manager
 from datetime import datetime
+from flask_login import UserMixin
 
 
-class Admin(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    user_models = [Admin, Teacher, Student]
+    for model in user_models:
+        user = model.query.get(user_id)
+        if user:
+            return model.query.get(user_id)
+    return None
+
+
+class Admin(db.Model, UserMixin):
     __tablename__ = 'admin'
     username = db.Column(db.String(50), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
@@ -12,13 +23,17 @@ class Admin(db.Model):
     phonenumber = db.Column(db.String(20), nullable=True)
     access = db.Column(db.Boolean, nullable=True)
     key = db.Column(db.String(50), nullable=True)
-	
 
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
+    
+    def get_id(self):
+        return self.username
 
 
-class Teacher(db.Model):
+
+
+class Teacher(db.Model, UserMixin):
     username = db.Column(db.String(50), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
@@ -44,12 +59,14 @@ class Teacher(db.Model):
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
 
+    def get_id(self):
+        return self.username
 
 class Class(db.Model):
     classid = db.Column(db.Integer, primary_key=True)
     classname = db.Column(db.String(50), nullable=False)
     classamount = db.Column(db.Integer, nullable=True)
-    
+
     teacher_id = db.Column(db.Integer,
                            db.ForeignKey("teacher.username"),
                            nullable=True)
@@ -61,13 +78,12 @@ class Class(db.Model):
                                        lazy='dynamic')
 
 
-class Student(db.Model):
+class Student(db.Model, UserMixin):
     username = db.Column(db.String(50), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
     key = db.Column(db.String(50), nullable=True)
     role = db.Column(db.String(50), default="Student")
-
 
     teacher_username = db.Column(db.String(50),
                                  db.ForeignKey("teacher.username"),
@@ -88,6 +104,8 @@ class Student(db.Model):
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
 
+    def get_id(self):
+        return self.username
 
 class StudentAttendance(db.Model):
     __tablename__ = 'student_attendance'
