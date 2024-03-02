@@ -30,6 +30,7 @@ def home():
         user_type = request.form.get('user_type')
         username = form.username.data.lower()
         password = form.password.data
+        #flash(f"username: {form.username.data}, password: {form.password.data}, usertype: {user_type}")
         if user_type == "student":
             user = Student.query.filter_by(username=username).first()
         elif user_type == "teacher":

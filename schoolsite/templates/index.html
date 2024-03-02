@@ -1,63 +1,95 @@
 {% extends "layout.html" %}
 
 {% block title %}
-         login page
+		 login page
+{% endblock %}
+
+{% block style %}
+   <style>
+	/* Custom styles for responsiveness */
+	.input-group {
+	  position: relative;
+	  width: 100%;
+	}
+	.input-group i {
+	  position: absolute;
+	  top: 50%;
+	  transform: translateY(-50%);
+	  left: 10px;
+	  color: #495057;
+	  z-index: 1;
+	}
+	.form-control {
+	  padding-left: 30px; /* Adjust icon padding */
+	}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-	<div class="">
-		<div class="">
-			<div class="login">
-				<!-- Flash Messages -->
-				{% with messages = get_flashed_messages(with_categories=true) %}
-				    {% if messages %}
-				        {% for category, message in messages %}
-				            <div class="alert alert-{{ category }}" role="alert">
-					            {{ message }}
-				            </div>
-				        {% endfor %}
-				    {% endif %}
-				{% endwith %}
-				<!-- Login Form -->
-				<h3 class="title">User Login</h3>
-				<form method="POST">
-					{{ form.hidden_tag() }}
-					<div class="form-group">
-						<i class="ri-user-fill"></i>
-						{{ form.username(class="form-control", placeholder="Username") }}
-						{% if form.username.errors %}
-						<div class="invalid-feedback">
-							{{ form.username.errors[0] }}
-						</div>
-						{% endif %}
-					</div>
-					<div class="form-group">
-						<i class="ri-lock-fill"></i>
-						{{ form.password(class="form-control", placeholder="Secret Key") }}
-						{% if form.password.errors %}
-						<div class="invalid-feedback">
-							{{ form.password.errors[0] }}
-						</div>
-						{% endif %}
-					</div>
-					<div class="form-group">
-						<i class="ri-user-fill"></i>
-						<select class="form-control" name="user_type">
-							<option value="" disabled>Select User Type</option>
-							<option value="student" selected>Student</option>
-							<option value="teacher">Teacher</option>
-							<option value="admin">Admin</option>
-						</select>
-					</div>
-					<button type="submit" class="btn btn-primary login-btn">LOGIN</button>
-					<a href="#" class="forgot">Forgot Username/Secret key?</a>
-					<div class="create">
-						<a href="#">contact developer ...</a>
-					</div>
-				</form>
-			</div>
+  <div class="container-fluid mt-5"> <!-- Added margin-top -->
+	<div class="row justify-content-center">
+	  <div class="col-sm-6">
+		<div class="card">
+		  <div class="card-body">
+			<h2 class="card-title text-center">Login</h2>
+			<!-- Display flashed messages here -->
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			  {% if messages %}
+				{% for category, message in messages %}
+				  <div class="alert alert-{{ category }}" role="alert">
+					{{ message }}
+				  </div>
+				{% endfor %}
+			  {% endif %}
+			{% endwith %}
+			<!-- Login Form -->
+			<form method="POST" action="">
+			  {{ form.hidden_tag() }} 
+			  <!-- Username Field -->
+			  <div class="form-group">
+				<div class="input-group">
+				  <i class="ri-user-fill"></i>
+				  {{ form.username(class="form-control", placeholder="Username") }}
+				</div>
+				{% if form.username.errors %}
+				  <div class="invalid-feedback d-block">
+					{{ form.username.errors[0] }}
+				  </div>
+				{% endif %}
+			  </div>
+			  <!-- Password Field -->
+			  <div class="form-group">
+				<div class="input-group">
+				  <i class="ri-lock-fill"></i>
+				  {{ form.password(class="form-control", placeholder="Password") }}
+				</div>
+				{% if form.password.errors %}
+				  <div class="invalid-feedback d-block">
+					{{ form.password.errors[0] }}
+				  </div>
+				{% endif %}
+			  </div>
+			  <!-- User Type Dropdown -->
+			  <div class="form-group">
+				<div class="input-group">
+				  <i class="ri-user-star-line"></i>
+				  <select class="form-control" required name="user_type">
+					<option value="" disabled selected>User Type</option>
+					<option value="student">Student</option>
+					<option value="teacher">Teacher</option>
+					<option value="admin">Admin</option>
+				  </select>
+				</div>
+			  </div>
+			  <!-- Login Button -->
+			  <div class="form-group">
+				<button type="submit" class="btn btn-primary btn-block">Login</button>
+			  </div>
+			</form>
+		  </div>
 		</div>
+	  </div>
 	</div>
-</div>
+  </div>
 {% endblock %}
+
