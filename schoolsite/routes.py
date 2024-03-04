@@ -4,10 +4,7 @@ from schoolsite.forms import LoginForm
 from schoolsite.models import Teacher, Student, Class, Admin
 from flask_login import login_user, current_user, logout_user, login_required
 
-
 school_name = "MySchool private"
-
-
 
 
 def login_user_and_redirect(user, role, next_page):
@@ -16,11 +13,9 @@ def login_user_and_redirect(user, role, next_page):
         return redirect(url_for('admin'))
     return redirect(url_for(next_page))
 
+
 def return_error():
     flash("Invalid username or password", "danger")
-
-
-
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -51,7 +46,6 @@ def home():
     return render_template("index.html", form=form)
 
 
-
 @app.route('/guardian')
 @login_required
 def parent():
@@ -64,19 +58,13 @@ def teacher():
     return render_template("teacher.html")
 
 
-
 @app.route("/admin")
 @login_required
 def admin():
     return render_template("admin.html")
 
 
-
-
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
-
