@@ -2,6 +2,7 @@ from sqlalchemy import JSON
 from schoolsite import db, login_manager
 from datetime import datetime
 from flask_login import UserMixin
+import uuid
 
 
 @login_manager.user_loader
@@ -15,14 +16,14 @@ def load_user(user_id):
 
 
 class Admin(db.Model, UserMixin):
-    __tablename__ = 'admin'
-    username = db.Column(db.String(50), primary_key=True)
+    username = db.Column(db.String(100), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(50), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
     phonenumber = db.Column(db.String(20), nullable=True)
     access = db.Column(db.Boolean, nullable=True)
-    key = db.Column(db.String(50), nullable=True)
+    key = db.Column(db.String(200), nullable=True)
+    image_link = db.Column(db.String(100), default='default.svg')
 
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
@@ -32,32 +33,37 @@ class Admin(db.Model, UserMixin):
 
 
 class Teacher(db.Model, UserMixin):
-    username = db.Column(db.String(50), primary_key=True)
+    username = db.Column(db.String(100), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
     dob = db.Column(db.Date, nullable=True)
-    address = db.Column(db.String(100), nullable=True)
-    email = db.Column(db.String(50), nullable=True)
+    address = db.Column(db.String(300), nullable=True)
+    email = db.Column(db.String(100), nullable=True)
     phonenumber = db.Column(db.String(20), nullable=True)
     gender = db.Column(db.String(10), nullable=True)
     qualification = db.Column(db.String(50), nullable=True)
+    highest_degree = db.Column(db.String(50), nullable=True)
+    years_of_experience = db.Column(db.Integer, nullable=True)
+    certifications = db.Column(db.String(200), nullable=True)
+    teaching_specializations = db.Column(db.String(100), nullable=True)
+    languages_spoken = db.Column(db.String(100), nullable=True)
+    emergency_contact = db.Column(db.String(50), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
     hire_date = db.Column(db.Date, nullable=True)
     left_date = db.Column(db.Date, nullable=True)
-    current_salary = db.Column(db.Decimal, nullable=True)
-    salarys = db.Column(JSON, nullable=True)
+    current_salary = db.Column(db.Integer, nullable=True)
+    salarys = db.Column(db.JSON, nullable=True)
+    subject_taught = db.Column(db.JSON, nullable=True)
 
     role = db.Column(db.String(50), default=None)
-    key = db.Column(db.String(50), nullable=True)
-    access = db.Column(db.Boolean, nullable=True)
-    image_link = db.Column(db.String(100), default='default.svg')
+    key = db.Column(db.String(200), nullable=True)
+    access = db.Column(db.Boolean, default=False)
+    image_link = db.Column(db.String(200), default='default.svg')
 
     class_teacher = db.relationship("Class", backref="teacher", lazy="dynamic")
     attendance = db.relationship("TeacherAttendance",
                                  backref='teacher',
                                  lazy='dynamic')
-    student_historys = db.relationship("StudentHistory",
-                                       backref='teacher',
-                                       lazy='dynamic')
     historys = db.relationship("TeacherHistory",
                                backref='teacher',
                                lazy='dynamic')
@@ -70,59 +76,65 @@ class Teacher(db.Model, UserMixin):
 
 
 class Class(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    classname = db.Column(db.String(50), nullable=False)
-    classamount = db.Column(db.Integer, nullable=True)
-
-    teacher_id = db.Column(db.Integer,
-                           db.ForeignKey("teacher.username"),
-                           nullable=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    class_name = db.Column(db.String(50), nullable=False)
+    class_fee = db.Column(db.Integer, nullable=True)
+    class_subjects = db.Column(JSON, nullable=True)
+    class_books = db.Column(JSON, nullable=True)
+    class_description = db.Column(db.Text, nullable=True)
+    class_time_table = db.Column(JSON, nullable=True)
+    class_Materials = db.Column(db.String(200), nullable=True)
+    teacher_username = db.Column(db.Integer,
+                                 db.ForeignKey("teacher.username"),
+                                 nullable=True)
     students = db.relationship("Student", backref="class_", lazy="dynamic")
     result = db.relationship("Results", backref='class_', lazy='dynamic')
     fee = db.relationship("StudentFee", backref='class_', lazy='dynamic')
     student_historys = db.relationship("StudentHistory",
                                        backref='class_',
                                        lazy='dynamic')
+    students_attendance = db.relationship("StudentAttendance",
+                                          backref='class_',
+                                          lazy='dynamic')
 
 
 class Student(db.Model, UserMixin):
-    username = db.Column(db.String(50), primary_key=True)
+    username = db.Column(db.String(100), primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50), nullable=False)
-	dob = db.Column(db.Date, nullable=True)
-    address = db.Column(db.String(100), nullable=True)
-    email = db.Column(db.String(50), nullable=True)
+    dob = db.Column(db.Date, nullable=True)
+    address = db.Column(db.String(300), nullable=True)
+    email = db.Column(db.String(200), nullable=True)
     phonenumber = db.Column(db.String(20), nullable=True)
     enroll_date = db.Column(db.Date, nullable=True)
-	
     guardians_name = db.Column(db.String(50), nullable=True)
-    guardians_email = db.Column(db.String(50), nullable=True)
+    guardians_email = db.Column(db.String(200), nullable=True)
     guardians_phonenumber = db.Column(db.String(20), nullable=True)
     guardians_relation = db.Column(db.String(50), nullable=True)
-
-
     state = db.Column(db.String(50), nullable=True)
-    home_town = db.Column(db.String(50), nullable=True)
-    local_government = db.Column(db.String(50), nullable=True)
+    home_town = db.Column(db.String(200), nullable=True)
+    local_government = db.Column(db.String(200), nullable=True)
     gender = db.Column(db.String(10), nullable=True)
-    
-	
-    key = db.Column(db.String(50), nullable=True)
+    key = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), default="Student")
+    grade_level = db.Column(db.String(50), nullable=True)  # Grade Level
+    previous_school = db.Column(db.String(100), nullable=True)
+    medical_information = db.Column(db.String(200),
+                                    nullable=True)  # Medical Information
+    parental_consent = db.Column(db.Boolean, default=True)  # Parental Consent
+    notes = db.Column(db.Text, nullable=True)  # Notes
+    languages_spoken = db.Column(db.String(100), nullable=True)
+    image_link = db.Column(db.String(100), default='default.svg')
 
-
-    class_id = db.Column(db.Integer,
-                         db.ForeignKey("class.id"),
-                         nullable=True)
-
+    class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=True)
     attendance = db.relationship("StudentAttendance",
                                  backref='student',
                                  lazy='dynamic')
     result = db.relationship("Results", backref='student', lazy='dynamic')
     fee = db.relationship("StudentFee", backref='student', lazy='dynamic')
     history = db.relationship("StudentHistory",
-                                       backref='student',
-                                       lazy='dynamic')
+                              backref='student',
+                              lazy='dynamic')
 
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
@@ -132,90 +144,98 @@ class Student(db.Model, UserMixin):
 
 
 class StudentAttendance(db.Model):
-    attendance_id = db.Column(db.Integer, primary_key=True)
+    attendance_id = db.Column(db.Integer, primary_key=True,  autoincrement=True)
     term = db.Column(db.String(50), nullable=False)
     morning_attendance = db.Column(db.DateTime, nullable=False)
     evening_attendance = db.Column(db.DateTime, nullable=True)
     comment = db.Column(db.String(1000), nullable=True)
+    status = db.Column(db.String(50), nullable=True)
+    late_arrival = db.Column(db.Boolean, nullable=True)
 
-    student_username = db.Column(db.String(50),
+    student_username = db.Column(db.String(200),
                                  db.ForeignKey("student.username"),
                                  nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
 
 
 class TeacherAttendance(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     term = db.Column(db.String(50), nullable=False)
-    month = db.Column(db.String(20), nullable=False)
     morning_attendance = db.Column(db.DateTime, nullable=False)
     evening_attendance = db.Column(db.DateTime, nullable=True)
-    comment = db.Column(db.String(50), nullable=True)
+    comment = db.Column(db.String(1000), nullable=True)
+    status = db.Column(db.String(50), nullable=True)
+    late_arrival = db.Column(db.Boolean, nullable=True)
 
-    teacher_username = db.Column(db.String(30),
+    teacher_username = db.Column(db.String(200),
                                  db.ForeignKey('teacher.username'),
                                  nullable=False)
 
 
 class Results(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     result_type = db.Column(db.String(50), nullable=False)
     term = db.Column(db.String(50), nullable=False)
-    subject = db.Column(db.String(30), nullable=False)
+    subject = db.Column(db.String(50), nullable=False)
     marks_obtain = db.Column(db.Integer, nullable=False)
     total_mark = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    submission_date = db.Column(db.DateTime, nullable=False)
+    comment = db.Column(db.String(1000), nullable=True)
 
-    student_username = db.Column(db.String(50),
+    student_username = db.Column(db.String(200),
                                  db.ForeignKey('student.username'),
                                  nullable=False)
-    class_id = db.Column(db.Integer,
-                         db.ForeignKey('class.id'),
-                         nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'), nullable=False)
 
 
 class StudentFee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    term = db.Column(db.String(20), nullable=False)
+    transaction_id = db.Column(db.String(50),
+                               primary_key=True,
+                               default=str(uuid.uuid4()))
+    year = db.Column(db.String(20), nullable=False)
+    term = db.Column(db.String(50), nullable=False)
     fee_amount = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.String(10), nullable=True)
+    payment_date = db.Column(db.DateTime, nullable=False)
+    payment_method = db.Column(db.String(100), nullable=True)
+    payment_status = db.Column(db.String(100), nullable=True)
+    payment_note = db.Column(db.String(1000), nullable=True)
 
-    student_username = db.Column(db.String(50),
+    student_username = db.Column(db.String(200),
                                  db.ForeignKey('student.username'),
                                  nullable=False)
-    class_id = db.Column(db.Integer,
-                         db.ForeignKey('class.id'),
-                         nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'), nullable=False)
 
 
 class StudentHistory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    year = db.Column(db.Integer, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, , autoincrement=True)
+    academy_year = db.Column(db.Integer, nullable=False)
     fee_paid = db.Column(JSON, nullable=True)
     exam_result = db.Column(JSON, nullable=True)
     attendance = db.Column(JSON, nullable=True)
     school_fees = db.Column(JSON, nullable=True)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    promotion_status = db.Column(db.String(50), nullable=True)
+    behavioral_notes = db.Column(db.String(1000), nullable=True)
+    achievements = db.Column(db.String(1000), nullable=True)
+    special_programs = db.Column(db.String(1000), nullable=True)
 
-    student_username = db.Column(db.String(50),
+    student_username = db.Column(db.String(200),
                                  db.ForeignKey('student.username'),
                                  nullable=False)
-    class_id = db.Column(db.Integer,
-                         db.ForeignKey('class.id'),
-                         nullable=False)
-    teacher_username = db.Column(db.String(50),
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'), nullable=False)
+    teacher_username = db.Column(db.String(200),
                                  db.ForeignKey("teacher.username"),
                                  nullable=True)
 
 
 class TeacherHistory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     year = db.Column(db.Integer, nullable=False)
     salarys = db.Column(JSON, nullable=True)
     attendance = db.Column(JSON, nullable=True)
     termclass = db.Column(JSON, nullable=True)
     role = db.Column(db.String(20), nullable=True)
 
-    teacher_username = db.Column(db.String(50),
+    teacher_username = db.Column(db.String(200),
                                  db.ForeignKey('teacher.username'),
                                  nullable=False)
