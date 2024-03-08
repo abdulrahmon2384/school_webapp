@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, url_for, redirect
 from schoolsite import app, db, bcrypt
 from schoolsite.forms import LoginForm
-from schoolsite.models import Teacher, Student, Class, Admin
+from schoolsite.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement
 from flask_login import login_user, current_user, logout_user, login_required
 
 school_name = "MySchool private"
@@ -49,7 +49,12 @@ def home():
 @app.route('/guardian')
 @login_required
 def parent():
-    return render_template("guardians.html")
+    events = Event.query.order_by(Event.date).limit(6).all()
+    announcements = Announcement.query.order_by(
+        Announcement.created_at).limit(2).all()
+    return render_template("guardians.html",
+                           events=events,
+                           announcements=announcements)
 
 
 @app.route('/teacher')

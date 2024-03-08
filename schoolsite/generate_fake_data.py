@@ -2,7 +2,7 @@ import random, uuid
 from random import choice, sample
 from datetime import datetime, timedelta
 from sqlalchemy import func
-from schoolsite.models import Student, db, Teacher, Class, StudentAttendance, Results, StudentFee, Admin, TeacherAttendance
+from schoolsite.models import Student, db, Teacher, Class, StudentAttendance, Results, StudentFee, Admin, TeacherAttendance, Event, Announcement
 from schoolsite import app, bcrypt
 from faker import Faker
 
@@ -66,6 +66,85 @@ def generate_class_time_slots():
         current_time = (datetime.strptime(current_time, '%H:%M') +
                         timedelta(hours=1)).strftime('%H:%M')
     return time_slots
+
+
+annoucement = [{
+    "title": "School Holiday",
+    "content":
+    "Please be reminded that there will be no classes on Friday, March 15th, due to a scheduled school holiday. Enjoy your long weekend!",
+    "date": "2024-03-15"
+}, {
+    "title": "Volunteer Opportunity",
+    "content":
+    "We're looking for parent volunteers to help with the upcoming school fair on April 5th. If you're interested, please contact the school office by March 20th.",
+    "date": "2024-03-07"
+}, {
+    "title": "Uniform Reminder",
+    "content":
+    "A friendly reminder to all students: please ensure you are wearing the correct school uniform as outlined in the student handbook. Thank you for your cooperation.",
+    "date": "2024-03-03"
+}, {
+    "title": "Library Book Return",
+    "content":
+    "All library books borrowed during the previous semester must be returned by Friday, March 8th. Overdue books will incur fines.",
+    "date": "2024-03-05"
+}]
+
+
+def write_announcements_to_db(json_data):
+    announcements = []
+    for announcement in json_data:
+        title = announcement['title']
+        content = announcement['content']
+        date = datetime.strptime(announcement['date'], '%Y-%m-%d').date()
+        new_announcement = Announcement(title=title,
+                                        content=content,
+										created_at=date)
+        announcements.append(new_announcement)
+    return announcements
+
+
+events = [{
+    "name": "Parent-Teacher Meeting",
+    "description":
+    "A meeting between parents and teachers to discuss students' progress and address any concerns.",
+    "date": "2024-04-15 18:00:00"
+}, {
+    "name": "School Open House",
+    "description":
+    "An event where prospective students and their families can visit the school, meet teachers, and learn about programs and facilities.",
+    "date": "2024-05-03 10:00:00"
+}, {
+    "name": "Science Fair",
+    "description":
+    "A showcase of student projects and experiments related to various scientific topics.",
+    "date": "2024-06-08 09:00:00"
+}, {
+    "name": "Field Day",
+    "description":
+    "A day of outdoor activities and sports competitions for students, often held at the end of the school year.",
+    "date": "2024-07-20 08:30:00"
+}, {
+    "name": "Graduation Ceremony",
+    "description":
+    "A formal event to celebrate and recognize students who are completing their studies and moving on to the next phase of their lives.",
+    "date": "2024-08-15 15:00:00"
+}]
+
+
+def add_events_to_database(events_lst):
+    events = []
+    for event_data in events_lst:
+        name = event_data['name']
+        description = event_data['description']
+        date = datetime.strptime(event_data['date'], '%Y-%m-%d %H:%M:%S')
+
+        # Create a new Event object
+        new_event = Event(name=name, description=description, date=date)
+
+        # Add the event to the database session
+        events.append(new_event)
+    return events
 
 
 def generate_class_time_table():
@@ -336,4 +415,11 @@ with app.app_context():
     db.session.add_all(teachrs_attendance)
     db.session.commit()
 
+    evens_data = add_events_to_database(events)
+    db.session.add_all(evens_data)
+    db.session.commit()
+
+    annoucements = write_announcements_to_db(annoucement)
+    db.session.add_all(annoucements)
+    db.session.commit()
     print("Done.......")

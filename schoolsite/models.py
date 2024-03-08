@@ -23,7 +23,7 @@ class Admin(db.Model, UserMixin):
     phonenumber = db.Column(db.String(20), nullable=True)
     access = db.Column(db.Boolean, nullable=True)
     key = db.Column(db.String(200), nullable=True)
-    image_link = db.Column(db.String(100), default='default.svg')
+    image_link = db.Column(db.String(100), default='default.png')
 
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
@@ -57,7 +57,7 @@ class Teacher(db.Model, UserMixin):
     role = db.Column(db.String(50), default=None)
     key = db.Column(db.String(200), nullable=True)
     access = db.Column(db.Boolean, default=False)
-    image_link = db.Column(db.String(200), default='default.svg')
+    image_link = db.Column(db.String(200), default='default.png')
 
     class_teacher = db.relationship("Class", backref="teacher", lazy="dynamic")
     attendance = db.relationship("TeacherAttendance",
@@ -122,7 +122,7 @@ class Student(db.Model, UserMixin):
     parental_consent = db.Column(db.Boolean, default=True)  # Parental Consent
     notes = db.Column(db.Text, nullable=True)  # Notes
     languages_spoken = db.Column(db.String(100), nullable=True)
-    image_link = db.Column(db.String(100), default='default.svg')
+    image_link = db.Column(db.String(100), default='default.png')
     access = db.Column(db.Boolean, default=False)
 
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=True)
@@ -238,3 +238,31 @@ class TeacherHistory(db.Model):
     teacher_username = db.Column(db.String(200),
                                  db.ForeignKey('teacher.username'),
                                  nullable=False)
+
+
+class Event(db.Model):
+    __tablename__ = 'events'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.now)
+
+    def __repr__(self):
+        return f"Event('{self.name}', '{self.date}')"
+
+
+
+
+
+
+class Announcement(db.Model):
+	__tablename__ = 'announcements'
+
+	id = db.Column(db.Integer, primary_key=True)
+	title = db.Column(db.String(100), nullable=False)
+	content = db.Column(db.Text, nullable=False)
+	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+	def __repr__(self):
+		return f"Announcement(title='{self.title}', content='{self.content}', created_at='{self.created_at}')"
