@@ -42,7 +42,6 @@ class Teacher(db.Model, UserMixin):
     phonenumber = db.Column(db.String(20), nullable=True)
     gender = db.Column(db.String(10), nullable=True)
     qualification = db.Column(db.String(50), nullable=True)
-    highest_degree = db.Column(db.String(50), nullable=True)
     years_of_experience = db.Column(db.Integer, nullable=True)
     certifications = db.Column(db.String(200), nullable=True)
     teaching_specializations = db.Column(db.String(100), nullable=True)
@@ -117,7 +116,6 @@ class Student(db.Model, UserMixin):
     gender = db.Column(db.String(10), nullable=True)
     key = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), default="Student")
-    grade_level = db.Column(db.String(50), nullable=True)  # Grade Level
     previous_school = db.Column(db.String(100), nullable=True)
     medical_information = db.Column(db.String(200),
                                     nullable=True)  # Medical Information
@@ -125,6 +123,7 @@ class Student(db.Model, UserMixin):
     notes = db.Column(db.Text, nullable=True)  # Notes
     languages_spoken = db.Column(db.String(100), nullable=True)
     image_link = db.Column(db.String(100), default='default.svg')
+    access = db.Column(db.Boolean, default=False)
 
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=True)
     attendance = db.relationship("StudentAttendance",
