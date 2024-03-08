@@ -82,7 +82,7 @@ class Class(db.Model):
     class_books = db.Column(JSON, nullable=True)
     class_description = db.Column(db.Text, nullable=True)
     class_time_table = db.Column(JSON, nullable=True)
-    class_Materials = db.Column(db.String(200), nullable=True)
+    materials = db.Column(db.String(200), nullable=True)
     teacher_username = db.Column(db.Integer,
                                  db.ForeignKey("teacher.username"),
                                  nullable=True)
@@ -143,10 +143,10 @@ class Student(db.Model, UserMixin):
 
 
 class StudentAttendance(db.Model):
-    attendance_id = db.Column(db.Integer, primary_key=True,  autoincrement=True)
+    attendance_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     term = db.Column(db.String(50), nullable=False)
-    morning_attendance = db.Column(db.DateTime, nullable=False)
-    evening_attendance = db.Column(db.DateTime, nullable=True)
+    morning_attendance = db.Column(db.DateTime, default=None)
+    evening_attendance = db.Column(db.DateTime, default=None)
     comment = db.Column(db.String(1000), nullable=True)
     status = db.Column(db.String(50), nullable=True)
     late_arrival = db.Column(db.Boolean, nullable=True)
@@ -158,7 +158,7 @@ class StudentAttendance(db.Model):
 
 
 class TeacherAttendance(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    attendance_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     term = db.Column(db.String(50), nullable=False)
     morning_attendance = db.Column(db.DateTime, nullable=False)
     evening_attendance = db.Column(db.DateTime, nullable=True)
@@ -206,7 +206,7 @@ class StudentFee(db.Model):
 
 
 class StudentHistory(db.Model):
-    id = db.Column(db.Integer, primary_key=True, , autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     academy_year = db.Column(db.Integer, nullable=False)
     fee_paid = db.Column(JSON, nullable=True)
     exam_result = db.Column(JSON, nullable=True)

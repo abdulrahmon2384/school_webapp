@@ -1,8 +1,8 @@
-import random
+import random, uuid
 from random import choice, sample
 from datetime import datetime, timedelta
 from sqlalchemy import func
-from schoolsite.models import Student, db, Teacher, Class, StudentAttendance, Results, StudentFee, Admin
+from schoolsite.models import Student, db, Teacher, Class, StudentAttendance, Results, StudentFee, Admin, TeacherAttendance
 from schoolsite import app, bcrypt
 from faker import Faker
 
@@ -77,7 +77,7 @@ def generate_class_time_table():
 
 
 # Generate fake admin data
-def generate_fake_admin(n):
+def generate_fake_admins(n):
     adm = []
     for _ in range(n):
         admin = Admin(username=fake.user_name(),
@@ -92,9 +92,9 @@ def generate_fake_admin(n):
 
 
 # Generate fake teacher data
-def generate_fake_teacher():
+def generate_fake_teachers(n):
     teachers = []
-    for _ in range(10):
+    for _ in range(n):
         teacher = Teacher(
             username=fake.user_name(),
             firstname=fake.first_name(),
@@ -125,19 +125,19 @@ def generate_fake_teacher():
     return teachers
 
 
-def generate_fake_class(teachers):
+def generate_fake_classes(teachers, class_names):
     classes = []
-    for _ in range(10):
-        class_name = fake.word()
+    for class_ in class_names:
+        class_name = class_
         class_fee = random.randint(20000, 50000)
-        class_subjects = generate_random_subjects(10)
+        class_subjects = {'subjects': generate_random_subjects(10)}
         class_books = {
             'books': generate_student_textbooks(5),
             'authors': [fake.name() for i in range(5)],
             'amounts': [random.randint(2000, 4000) for i in range(5)]
         }
         class_description = fake.text()
-        class_time_table = generate_class_time_table
+        class_time_table = generate_class_time_table()
         class_materials = fake.url()
         teacher_username = choice(teachers).username
 
@@ -147,12 +147,13 @@ def generate_fake_class(teachers):
                                class_books=class_books,
                                class_description=class_description,
                                class_time_table=class_time_table,
-                               class_materials=class_materials,
+                               materials=class_materials,
                                teacher_username=teacher_username)
-        return class_instance
+        classes.append(class_instance)
+    return classes
 
 
-def generate_fake_student(n, classes):
+def generate_fake_students(n, classes):
     students = []
     for _ in range(n):
         student = Student(username=fake.user_name(),
@@ -178,7 +179,7 @@ def generate_fake_student(n, classes):
                           parental_consent=fake.boolean(),
                           notes=fake.text(),
                           languages_spoken=fake.word(),
-                          class_id=choice(classes),
+                          class_id=choice(classes).id,
                           access=True)
         students.append(student)
     return students
@@ -238,35 +239,101 @@ def generate_fake_student_fees(students, years, terms):
     return student_fees
 
 
-def generate_fake_attendance(model, persons, terms):
+def generate_fake_attendance(model, persons, terms, role='Student'):
     attendance_list = []
     for person in persons:
-        for term in terms:
-            morning_attendance = fake.date_time_between(
-                start_date=f"{term}-01", end_date=f"{term}-28")
-            evening_attendance = fake.date_time_between(
-                start_date=morning_attendance,
-                end_date=f"{term}-28") if fake.boolean(
-                    chance_of_getting_true=70) else None
-            comment = fake.text() if fake.boolean(
-                chance_of_getting_true=20) else None
-            status = fake.random_element(
-                elements=('Present', 'Absent', 'Late')) if fake.boolean(
-                    chance_of_getting_true=80) else None
+        for term, date in terms.items():
+            random_date = fake.date_between(start_date=date[0],
+                                            end_date=date[1])
+
+            morning_attendance = random_date
+
+            # Calculate evening attendance with a fixed time difference
+            evening_attendance = morning_attendance + timedelta(
+                hours=7) if morning_attendance else None
+
+            comment = fake.text()
+            status = fake.random_element(elements=('Present', 'Absent',
+                                                   'Late'))
             late_arrival = fake.boolean(
                 chance_of_getting_true=30) if status == 'Late' else None
 
-            attendance_entry = model(term=term,
-                                     morning_attendance=morning_attendance,
-                                     evening_attendance=evening_attendance,
-                                     comment=comment,
-                                     status=status,
-                                     late_arrival=late_arrival,
-                                     student_username=person.username
-                                     if isinstance(person, Student) else None,
-                                     teacher_username=person.username
-                                     if isinstance(person, Teacher) else None,
-                                     class_id=person.class_id if isinstance(
-                                         person, Student) else None)
+            # Role-specific logic
+            if role == 'Teacher':
+                attendance_entry = model(term=term,
+                                         morning_attendance=morning_attendance,
+                                         evening_attendance=evening_attendance,
+                                         comment=comment,
+                                         status=status,
+                                         late_arrival=late_arrival,
+                                         teacher_username=person.username)
+            else:
+                attendance_entry = model(term=term,
+                                         morning_attendance=morning_attendance,
+                                         evening_attendance=evening_attendance,
+                                         comment=comment,
+                                         status=status,
+                                         late_arrival=late_arrival,
+                                         student_username=person.username,
+                                         class_id=person.class_id)
+
             attendance_list.append(attendance_entry)
     return attendance_list
+
+
+with app.app_context():
+    db.create_all()
+    admins = generate_fake_admins(2)
+    db.session.add_all(admins)
+    db.session.commit()
+
+    teachers = generate_fake_teachers(10)
+    db.session.add_all(teachers)
+    db.session.commit()
+
+    teachers = Teacher.query.all()
+    class_names = [
+        'KG1', "KG2", 'PRIMARY1', 'PRIMARY2', 'PRIMARY3', 'PRIMARY4',
+        'PRIMARY5', 'PRIMARY6'
+    ]
+    classes = generate_fake_classes(teachers, class_names)
+    db.session.add_all(classes)
+    db.session.commit()
+
+    classes = Class.query.all()
+    students = generate_fake_students(100, classes)
+    db.session.add_all(students)
+    db.session.commit()
+
+    years = [2023]
+    students = Student.query.all()
+    terms = ['first term', 'second term', 'third term']
+    result_types = ['exam', 'assignment', 'quiz', 'test']
+
+    results = generate_fake_results(students, terms, result_types)
+    db.session.add_all(results)
+    db.session.commit()
+
+    students_fee = generate_fake_student_fees(students, years, terms)
+    db.session.add_all(students_fee)
+    db.session.commit()
+
+    term = {
+        'first term': [datetime(2023, 1, 1),
+                       datetime(2023, 3, 31)],
+        'second term': [datetime(2023, 4, 1),
+                        datetime(2023, 7, 31)],
+        'third term': [datetime(2023, 8, 1),
+                       datetime(2023, 11, 30)]
+    }
+    students_attendance = generate_fake_attendance(StudentAttendance, students,
+                                                   term)
+    db.session.add_all(students_attendance)
+    db.session.commit()
+
+    teachrs_attendance = generate_fake_attendance(TeacherAttendance, teachers,
+                                                  term, 'Teacher')
+    db.session.add_all(teachrs_attendance)
+    db.session.commit()
+
+    print("Done.......")
