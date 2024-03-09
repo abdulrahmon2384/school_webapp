@@ -1,14 +1,14 @@
 from flask import render_template, flash, request, url_for, redirect, jsonify, Blueprint
-from app import app, db, bcrypt
-from app.forms import LoginForm
-from app.models import Announcement, Results, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement
+from schoolsite.app import app, db, bcrypt
+from schoolsite.app.forms import LoginForm
+from schoolsite.app.models import Announcement, Results, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement
 from flask_login import login_user, current_user, logout_user, login_required
-from functions.home_function import *
+from schoolsite.app.functions import *
 
 home_bp = Blueprint('home', __name__)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@home_bp.route('/', methods=['GET', 'POST'])
 def home():
     form = LoginForm()
     if form.validate_on_submit():
@@ -33,4 +33,10 @@ def home():
 
         return_error()
 
-    return render_template("index.html", form=form)
+    return render_template("home/index.html", form=form)
+
+
+@home_bp.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))

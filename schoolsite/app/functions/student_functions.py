@@ -1,5 +1,5 @@
 from typing import Iterable
-from app.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement, Results
+from schoolsite.app.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement, Results
 from flask_login import login_user, current_user
 from flask import render_template, flash, request, url_for, redirect, jsonify
 

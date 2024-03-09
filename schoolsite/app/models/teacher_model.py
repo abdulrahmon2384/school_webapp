@@ -1,5 +1,5 @@
 from sqlalchemy import JSON
-from app import db
+from schoolsite.app import db
 from flask_login import UserMixin
 
 

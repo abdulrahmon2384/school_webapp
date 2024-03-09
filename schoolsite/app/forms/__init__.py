@@ -1,1 +1,1 @@
-from .home_forms import LoginForm
+from schoolsite.app.forms.home_forms import LoginForm

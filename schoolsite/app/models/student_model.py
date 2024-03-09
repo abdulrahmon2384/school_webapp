@@ -1,7 +1,8 @@
 from sqlalchemy import JSON
-from app import db
+from schoolsite.app import db
 from datetime import datetime
 from flask_login import UserMixin
+import uuid
 
 
 class Class(db.Model):

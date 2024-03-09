@@ -1,4 +1,4 @@
-import student_function
-import teacher_function
-import admin_function
-import home_function
+from .student_functions import *
+from .teacher_functions import *
+from .admin_functions import *
+from .home_functions import *

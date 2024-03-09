@@ -38,3 +38,24 @@
 	text-align: center;
 	margin-top: 20px;
 }
+
+
+
+
+
+/* Custom styles for responsiveness */
+.input-group {
+  position: relative;
+  width: 100%;
+}
+.input-group i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10px;
+  color: #495057;
+  z-index: 1;
+}
+.form-control {
+  padding-left: 30px; /* Adjust icon padding */
+}
