@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Child's Performance Overview</title>
+</head>
+<body>
+	<h2>Child's Performance Overview</h2>
+
+	<div id="filters">
+		<label for="year">Year:</label>
+		<select id="year">
+			<option value="">All</option>
+			<!-- Options will be populated dynamically -->
+		</select>
+
+		<label for="term">Term:</label>
+		<select id="term">
+			<option value="">All</option>
+			<!-- Options will be populated dynamically -->
+		</select>
+
+		<label for="result_type">Result Type:</label>
+		<select id="result_type">
+			<option value="">All</option>
+			<!-- Options will be populated dynamically -->
+		</select>
+
+		<button onclick="filterData()">Filter</button>
+	</div>
+
+	<table id="performance_table">
+		<thead>
+			<tr>
+				<th>Subject</th>
+				<th>Year</th>
+				<th>Term</th>
+				<th>Result Type</th>
+				<th>Grade</th>
+				<th>Test Scores</th>
+				<th>Comments</th>
+			</tr>
+		</thead>
+		<tbody id="performance_data_body">
+			<!-- Data will be populated dynamically -->
+		</tbody>
+	</table>
+
+	<script>
+		// Fetch data from Flask API
+		fetch('/api/performance')
+			.then(response => response.json())
+			.then(data => {
+				// Populate filter options
+				populateFilterOptions(data);
+
+				// Display all data initially
+				displayPerformanceData(data);
+			})
+			.catch(error => {
+				console.error('Error fetching data:', error);
+			});
+
+		// Function to populate filter options
+		function populateFilterOptions(data) {
+			const years = [...new Set(data.map(entry => entry.year))];
+			const terms = [...new Set(data.map(entry => entry.term))];
+			const resultTypes = [...new Set(data.map(entry => entry.result_type))];
+
+			const yearSelect = document.getElementById('year');
+			const termSelect = document.getElementById('term');
+			const resultTypeSelect = document.getElementById('result_type');
+
+			years.forEach(year => {
+				const option = document.createElement('option');
+				option.text = year;
+				option.value = year;
+				yearSelect.add(option);
+			});
+
+			terms.forEach(term => {
+				const option = document.createElement('option');
+				option.text = term;
+				option.value = term;
+				termSelect.add(option);
+			});
+
+			resultTypes.forEach(resultType => {
+				const option = document.createElement('option');
+				option.text = resultType;
+				option.value = resultType;
+				resultTypeSelect.add(option);
+			});
+		}
+
+		// Function to filter and display data
+		function filterData() {
+			const year = document.getElementById('year').value;
+			const term = document.getElementById('term').value;
+			const resultType = document.getElementById('result_type').value;
+
+			fetch('/api/performance')
+				.then(response => response.json())
+				.then(data => {
+					let filteredData = data;
+
+					if (year) {
+						filteredData = filteredData.filter(entry => entry.year == year);
+					}
+					if (term) {
+						filteredData = filteredData.filter(entry => entry.term == term);
+					}
+					if (resultType) {
+						filteredData = filteredData.filter(entry => entry.result_type == resultType);
+					}
+
+					displayPerformanceData(filteredData);
+				})
+				.catch(error => {
+					console.error('Error fetching data:', error);
+				});
+		}
+
+		// Function to display performance data in the table
+		function displayPerformanceData(data) {
+			const tableBody = document.getElementById('performance_data_body');
+			tableBody.innerHTML = '';
+
+			data.forEach(entry => {
+				const row = tableBody.insertRow();
+				row.innerHTML = `
+					<td>${entry.subject}</td>
+					<td>${entry.year}</td>
+					<td>${entry.term}</td>
+					<td>${entry.result_type}</td>
+					<td>${entry.grade}</td>
+					<td>${entry.test_scores}</td>
+					<td>${entry.comments}</td>
+				`;
+			});
+		}
+	</script>
+</body>
+</html>

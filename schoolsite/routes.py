@@ -1,21 +1,13 @@
-from flask import render_template, flash, request, url_for, redirect
+from flask import render_template, flash, request, url_for, redirect, jsonify
 from schoolsite import app, db, bcrypt
 from schoolsite.forms import LoginForm
-from schoolsite.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement
+from schoolsite.models import Announcement, Results, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement
 from flask_login import login_user, current_user, logout_user, login_required
+from schoolsite.methods import *
 
-school_name = "MySchool private"
-
-
-def login_user_and_redirect(user, role, next_page):
-    login_user(user, remember=True)
-    if role == "head teacher":
-        return redirect(url_for('admin'))
-    return redirect(url_for(next_page))
-
-
-def return_error():
-    flash("Invalid username or password", "danger")
+school_name = "School Name"
+number_of_event = 6
+number_of_annoucement = 2
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -46,15 +38,26 @@ def home():
     return render_template("index.html", form=form)
 
 
-@app.route('/guardian')
+@app.route('/guardian', methods=['GET'])
 @login_required
 def parent():
-    events = Event.query.order_by(Event.date).limit(6).all()
-    announcements = Announcement.query.order_by(
-        Announcement.created_at).limit(2).all()
+    student_results = get_student_result(current_user.username)
+    result = get_columns(student_results, ['year', 'term', 'result_type'])
+    events = get_latest_events(number_of_event)
+    announcements = get_latest_announcements(number_of_annoucement)
     return render_template("guardians.html",
                            events=events,
-                           announcements=announcements)
+                           announcements=announcements,
+                           current_user=current_user,
+                           school_name=school_name,
+                           results=result)
+
+
+@app.route('/api/performance', methods=['POST', 'GET'])
+@login_required
+def performance():
+    student_results = get_student_result(current_user.username)
+    return jsonify({"results": student_results})
 
 
 @app.route('/teacher')
