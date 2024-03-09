@@ -1,9 +1,8 @@
 import random, uuid
 from random import choice, sample
 from datetime import datetime, timedelta
-from sqlalchemy import func
-from schoolsite.models import Student, db, Teacher, Class, StudentAttendance, Results, StudentFee, Admin, TeacherAttendance, Event, Announcement
-from schoolsite import app, bcrypt
+from app.models import Student, Teacher, Class, StudentAttendance, Results, StudentFee, Admin, TeacherAttendance, Event, Announcement
+from app import app, bcrypt, db
 from faker import Faker
 
 fake = Faker()
@@ -99,7 +98,7 @@ def write_announcements_to_db(json_data):
         date = datetime.strptime(announcement['date'], '%Y-%m-%d').date()
         new_announcement = Announcement(title=title,
                                         content=content,
-										created_at=date)
+                                        created_at=date)
         announcements.append(new_announcement)
     return announcements
 

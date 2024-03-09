@@ -1,0 +1,36 @@
+from flask import render_template, flash, request, url_for, redirect, jsonify, Blueprint
+from app import app, db, bcrypt
+from app.forms import LoginForm
+from app.models import Announcement, Results, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement
+from flask_login import login_user, current_user, logout_user, login_required
+from functions.home_function import *
+
+home_bp = Blueprint('home', __name__)
+
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user_type = request.form.get('user_type')
+        username = form.username.data.lower()
+        password = form.password.data
+        #flash(f"username: {form.username.data}, password: {form.password.data}, usertype: {user_type}")
+        if user_type == "student":
+            user = Student.query.filter_by(username=username).first()
+        elif user_type == "teacher":
+            user = Teacher.query.filter_by(username=username).first()
+        else:
+            user = Admin.query.filter_by(username=username).first()
+
+        if user and bcrypt.check_password_hash(user.key, password):
+            if user_type == "student":
+                return login_user_and_redirect(user, None, 'parent')
+            elif user_type == "teacher":
+                return login_user_and_redirect(user, user.role, 'teacher')
+            else:
+                return login_user_and_redirect(user, None, 'admin')
+
+        return_error()
+
+    return render_template("index.html", form=form)

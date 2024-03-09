@@ -2,6 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from .routes import routes_bp
+from .api import api_bp
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
@@ -10,9 +12,9 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
-#login_manager.login_view = "login"
+app.register_blueprint(routes_bp)
 
-from schoolsite import routes, models  #, generate_fake_data
+from app import models
 
 with app.app_context():
     db.create_all()
