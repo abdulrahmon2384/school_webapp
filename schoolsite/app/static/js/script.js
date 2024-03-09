@@ -138,6 +138,77 @@ document.querySelectorAll('[data-tab]').forEach(function (item) {
 
 
 
+
+
+
+
+
+
+
+function fetchAndPopulate() {
+	const year = document.getElementById('year').value;
+	const term = document.getElementById('term').value;
+	const resultType = document.getElementById('result_type').value;
+
+	fetch(`/api/performance?year=${year}&term=${term}&result_type=${resultType}`)
+		.then(response => response.json())
+		.then(data => populateTable(data.results))
+		.catch(error => console.error('Error fetching data:', error));
+}
+
+function populateTable(results) {
+	const tableBody = document.getElementById('performanceTableBody');
+	tableBody.innerHTML = '';
+
+	results.forEach(result => {
+		const row = document.createElement('tr');
+		row.innerHTML = `
+			<td class="py-2 px-4 border-b border-b-gray-50">
+				<div class="flex items-center">
+					<a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">${result.subject}</a>
+				</div>
+			</td>
+			<td class="py-2 px-4 border-b border-b-gray-50">
+				<span class="text-[13px] font-medium text-gray-400">${result.grade}</span>
+			</td>
+			<td class="py-2 px-4 border-b border-b-gray-50">
+				<span class="text-[13px] font-medium text-gray-400">${result.test_scores}</span>
+			</td>
+			<td class="py-2 px-4 border-b border-b-gray-50">
+				<span class="text-[13px] font-medium text-gray-400">${result.comments}</span>
+			</td>
+		`;
+		tableBody.appendChild(row);
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Sorting Child's Performance table
 function sortTable() {
     var table, rows, switching, i, x, y, shouldSwitch;

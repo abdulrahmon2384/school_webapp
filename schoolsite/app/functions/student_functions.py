@@ -55,19 +55,3 @@ def convert_to_dict(obj) -> list:
         "comments": result.comment
     } for result in obj]
     return to_dict
-
-
-def get_student_result(student_username: str) -> list:
-    student_result = Results.query.filter_by(
-        student_username=student_username).all()
-    to_list = convert_to_dict(student_result)
-    return to_list
-
-
-def get_columns(dicts: dict, columns: Iterable) -> dict:
-    result_columns = {}
-    for column in columns:
-        values = {row[column]
-                  for row in dicts}  # Convert to set to remove duplicates
-        result_columns[column] = list(values)  # Convert back to list
-    return result_columns

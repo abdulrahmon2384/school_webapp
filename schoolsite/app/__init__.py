@@ -32,3 +32,8 @@ def load_user(user_id):
         if user:
             return user
     return None
+
+with app.app_context():
+	db.create_all()
+	
+#import schoolsite.app.generate_fake_data 

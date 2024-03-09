@@ -98,6 +98,7 @@ class Results(db.Model):
     total_mark = db.Column(db.Integer, nullable=False)
     submission_date = db.Column(db.DateTime, nullable=False)
     comment = db.Column(db.String(1000), nullable=True)
+    year = db.Column(db.String(20), nullable=False)
 
     student_username = db.Column(db.String(200),
                                  db.ForeignKey('student.username'),

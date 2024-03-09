@@ -8,6 +8,14 @@ from schoolsite.app.functions import *
 home_bp = Blueprint('home', __name__)
 
 
+
+def login_user_and_redirect(user, role, next_page):
+	login_user(user, remember=True)
+	if role == "head teacher":
+		return redirect(url_for('admin.admin'))
+	return redirect(url_for(next_page))
+
+
 @home_bp.route('/', methods=['GET', 'POST'])
 def home():
     form = LoginForm()
@@ -25,11 +33,11 @@ def home():
 
         if user and bcrypt.check_password_hash(user.key, password):
             if user_type == "student":
-                return login_user_and_redirect(user, None, 'parent')
+                return login_user_and_redirect(user, None, 'routes.student.parent')
             elif user_type == "teacher":
-                return login_user_and_redirect(user, user.role, 'teacher')
+                return login_user_and_redirect(user, user.role, 'teacher.teacher')
             else:
-                return login_user_and_redirect(user, None, 'admin')
+                return login_user_and_redirect(user, None, 'admin.admin')
 
         return_error()
 
@@ -39,4 +47,4 @@ def home():
 @home_bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect(url_for('home/index.html'))

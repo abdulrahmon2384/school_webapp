@@ -1,8 +1,8 @@
 import random, uuid
 from random import choice, sample
 from datetime import datetime, timedelta
-from app.models import Student, Teacher, Class, StudentAttendance, Results, StudentFee, Admin, TeacherAttendance, Event, Announcement
-from app import app, bcrypt, db
+from schoolsite.app.models import Student, Teacher, Class, StudentAttendance, Results, StudentFee, Admin, TeacherAttendance, Event, Announcement
+from schoolsite.app import app, bcrypt, db
 from faker import Faker
 
 fake = Faker()
@@ -268,15 +268,16 @@ def generate_fake_results(students, terms, result_types):
     for student in students:
         for term in terms:
             for result_type in result_types:
-                subjects = student.class_.class_subjects
+                subjects = student.class_.class_subjects['subjects']
                 for subject in subjects:
+                    date = fake.date_between(start_date='-1y', end_date='now')
                     result = Results(result_type=result_type,
+									 year=str(date.year),
                                      term=term,
                                      subject=subject,
                                      marks_obtain=100,
                                      total_mark=random.randint(40, 100),
-                                     submission_date=fake.date_time_between(
-                                         start_date="-1y", end_date="now"),
+                                     submission_date=date,
                                      comment=fake.text(),
                                      student_username=student.username,
                                      class_id=student.class_id)

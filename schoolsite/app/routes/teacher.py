@@ -10,4 +10,4 @@ teacher_bp = Blueprint('teacher', __name__)
 @teacher_bp.route('/teacher')
 @login_required
 def teacher():
-    return render_template("teacher.html")
+    return render_template("teacher/index.html")
