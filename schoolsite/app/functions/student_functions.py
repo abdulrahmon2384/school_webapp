@@ -46,12 +46,35 @@ def get_percentage(result) -> int:
 
 def convert_to_dict(obj) -> list:
     to_dict = [{
-        "subject": result.subject,
-        "year": result.submission_date.year,
-        "term": result.term,
-        "result_type": result.result_type,
-        "grade": get_grade(result),
-        "test_scores": f"{get_percentage(result)}%",
-        "comments": result.comment
+        "subject":
+        result.subject,
+        "year":
+        result.submission_date.year,
+        "term":
+        result.term,
+        "result_type":
+        result.result_type,
+        "grade":
+        get_grade(result),
+        "test_scores":
+        f"{get_percentage(result)}%",
+        "comments":
+        result.comment[:30] +
+        "..." if len(result.comment) > 20 else result.comment
     } for result in obj]
     return to_dict
+
+
+def get_student_result(student_username: str) -> list:
+    student_result = Results.query.filter_by(
+        student_username=student_username).all()
+    to_list = convert_to_dict(student_result)
+    return to_list
+
+
+def get_columns(dicts: dict, columns: Iterable) -> dict:
+    result_columns = {}
+    for column in columns:
+        values = {row[column] for row in dicts}
+        result_columns[column] = list(values)
+    return result_columns
