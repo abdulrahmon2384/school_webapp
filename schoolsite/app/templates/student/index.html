@@ -256,7 +256,7 @@
                     </div>
 					<select id="year">
 						<option value=>Download</option>
-						{% for file in ['excel', 'csv', 'json', 'xml', 'yaml', 'yml', 'yaml', 'yml'] %}
+						{% for file in ['excel', 'csv', 'json', 'xml'] %}
 							  <option value="{{ file }}">{{ file }}</option>
 						{% endfor %}
 					</select>
@@ -267,18 +267,12 @@
                 <div class="font-medium">Child's Performance Overview</div>
                 <div>
                      <div>
-                         <button class="tablinks" onclick="openTab(event, 'gradeDistribution')">subject overview</button>
-                        <button class="tablinks" onclick="openTab(event, 'testScores')">Test Scores Over Time</button>
+                        <button class="tablinks" id="barChartButton">Grades Overview</button>
+                        <button class="tablinks" id="donutChartButton">Grades</button>
                         <button class="tablinks" onclick="openTab(event, 'performanceTrends')">Performance Trends</button>
                      </div>
-                     <div id="gradeDistribution" class="tab">
-                         <canvas id="subjectChart" ></canvas>
-                     </div>
-                     <div id="testScores" class="tab">
-                           <div id="testScoresOverTime"></div>
-                     </div>
-                     <div id="performanceTrends" class="tab">
-                            <canvas id="performanceTrendsChart" width="400" height="100"></canvas>
+                     <div id="bar" class="tab">
+                         <canvas id="Chart" ></canvas>
                      </div>
                 </div>
             </div>

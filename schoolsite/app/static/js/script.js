@@ -173,7 +173,7 @@ document.querySelectorAll('[data-tab]').forEach(function (item) {
 
 
 
-let subjectChart; 
+let chart; 
 
 
 function fetchData(dataProcced) {
@@ -263,18 +263,70 @@ function createHorizontalBarChart(data) {
 	  };
 
 
-  const ctx = document.getElementById('subjectChart').getContext('2d');
+  const ctx = document.getElementById('Chart').getContext('2d');
   // If there's an existing chart, destroy it first
-  if (subjectChart) {
-		subjectChart.destroy();
+  if (chart) {
+		chart.destroy();
 	}
  
-  subjectChart = new Chart(ctx, {
+  chart = new Chart(ctx, {
 	type: 'bar',
 	data: chartData,
 	options: options
   });
+
+
+	
 }
+
+
+//create donut chart
+
+function createDonutChart(data) {
+  var grades = data.map(item => item.grade);
+  var uniqueGrades = [...new Set(grades)];
+  var gradeCounts = {};
+  grades.forEach(grade => {
+	gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
+  });
+
+  var chartData = {
+	labels: uniqueGrades,
+	datasets: [{
+	  data: uniqueGrades.map(grade => gradeCounts[grade]),
+	  backgroundColor: [
+		'rgba(255, 99, 132, 0.5)',
+		'rgba(54, 162, 235, 0.5)',
+		'rgba(255, 206, 86, 0.5)',
+		'rgba(75, 192, 192, 0.5)',
+		'rgba(153, 102, 255, 0.5)',
+		'rgba(255, 159, 64, 0.5)'
+	  ],
+	  hoverOffset: 4
+	}]
+  };
+
+  var ctx = document.getElementById('Chart').getContext('2d');
+  if (chart) {
+		chart.destroy();
+  }
+  chart = new Chart(ctx, {
+	type: 'doughnut',
+	data: chartData
+  });
+}
+// end donut chart
+
+document.getElementById('barChartButton').addEventListener('click', function() {
+	fetchData(createHorizontalBarChart);
+});
+document.getElementById('donutChartButton').addEventListener('click', function() {
+	fetchData(createDonutChart);
+});
+
+
+
+
 
 
 
@@ -285,16 +337,4 @@ function updatePerformance() {
 	fetchData(createHorizontalBarChart);
 	fetchData(displayResults); 
 }
-
-
-
-
-
-
-
-
-
 window.onload = updatePerformance;
-//window.onload = function() {
-	
-//};

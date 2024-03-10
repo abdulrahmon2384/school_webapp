@@ -6,11 +6,22 @@
 
 @media only screen and (max-width: 768px) {
   /* Adjust chart font size for tablet */
-  #myChart {
+#Chart {
 	font-size: 14px;
+	width: 300px; /* Adjust width as needed */
+	height: 300px; /* Adjust height as needed */
+	margin: 0 auto;
   }
 }
 
+@media only screen and (min-width: 768px) {
+  #Chart {
+	font-size: 16px; /* Adjust font size for larger screens */
+	width: 500px; /* Adjust width as needed */
+	height: 500px; /* Adjust height as needed */
+	margin: 0 auto;
+  }
+}
 
 
 
