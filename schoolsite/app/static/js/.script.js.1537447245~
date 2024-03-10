@@ -138,18 +138,18 @@ document.querySelectorAll('[data-tab]').forEach(function (item) {
 
 
 
+function fetchData(year, term, resultType) {
+  const apiUrl = `/api/performance?year=${year}&term=${term}&result_type=${resultType}`;
+  return fetch(apiUrl)
+	.then(response => response.json());
+}
 
 
 
 
 
 
-
-
-
-
-
-function fetchData(dataProcced) {
+function fetchAndDisplay() {
   const year = document.getElementById("year").value;
   const term = document.getElementById("term").value;
   const resultType = document.getElementById("result_type").value;
@@ -159,7 +159,7 @@ function fetchData(dataProcced) {
   fetch(apiUrl)
 	.then(response => response.json())
 	.then(data => {
-		dataProcced(data.results);
+	  displayResults(data.results);
 	})
 	.catch(error => console.error('Error fetching data:', error));
 }
@@ -183,6 +183,76 @@ function displayResults(results) {
 
 
 
-window.onload = function() {
-	fetchData(displayResults); // Optionally call drawChart here as well
-};
+
+
+
+
+
+
+
+
+// Function to draw the line chart
+function drawChart() {
+  const year = document.getElementById("year").value;
+  const term = document.getElementById("term").value;
+  const resultType = document.getElementById("result_type").value;
+	
+  fetchData(year, term, resultType)
+	.then(data => {
+	  const chartData = {};
+	  data.results.forEach(result => {
+		if (!chartData[result.subject]) {
+		  chartData[result.subject] = [];
+		}
+		chartData[result.subject].push(parseFloat(result.test_scores));
+	  });
+
+	  const chartArrayData = Object.keys(chartData).map(subject => {
+		const scores = chartData[subject];
+		return [subject, ...scores];
+	  });
+
+	  const chartHeader = ['Subject', ...data.results.map(result => result.year)];
+	  chartArrayData.unshift(chartHeader);
+
+	  const dataTable = google.visualization.arrayToDataTable(chartArrayData);
+
+	  const options = {
+		title: 'Student Performance by Subject',
+		curveType: 'function',
+		legend: { position: 'bottom' }
+	  };
+
+	  const chart = new google.visualization.LineChart(document.getElementById('gradeDistributionChart'));
+	  chart.draw(dataTable, options);
+	})
+	.catch(error => {
+	  console.error('Error fetching data:', error);
+	});
+}
+
+
+google.charts.load('current', { 'packages': ['corechart'] });
+google.charts.setOnLoadCallback(drawChart);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Call fetchData function on page load
+window.onload = fetchAndDisplay;

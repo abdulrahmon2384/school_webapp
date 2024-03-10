@@ -210,7 +210,7 @@
 					<div>
 						<div >
 							<label for="year">Year:</label>
-							<select id="year" onchange="fetchData()">
+							<select id="year" onchange="fetchData(displayResults)">
 								{% if results.get('year') %}
 								    {% for year in results.get('year') %}
 								        <option value="{{ year }}">{{ year }}</option>
@@ -220,7 +220,7 @@
 						</div>
 						<div >
 							<label for="term">Term:</label>
-							<select id="term" onchange="fetchData()">
+							<select id="term" onchange="fetchData(displayResults)">
 								{% if results.get('term') %}
 									{% for term in results.get('term') %}
 										<option value="{{ term }}">{{ term }} {{ i }}</option>
@@ -230,7 +230,7 @@
 						</div>
 						<div >
 							<label for="result_type">Result Type:</label>
-							<select id="result_type" onchange="fetchData()">
+							<select id="result_type" onchange="fetchData(displayResults)">
 								{% if results.get('result_type') %}
 									{% for result_type in results.get('result_type') %}
 										<option value="{{ result_type }}">{{ result_type }}</option>
