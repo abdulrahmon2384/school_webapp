@@ -3,6 +3,21 @@
 
 
  /*My Css */
+
+@media only screen and (max-width: 768px) {
+  /* Adjust chart font size for tablet */
+  #myChart {
+	font-size: 14px;
+  }
+}
+
+
+
+
+
+
+
+
 .announcement-container {
   margin-top: 5px;
 }

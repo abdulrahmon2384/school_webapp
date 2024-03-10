@@ -210,7 +210,7 @@
 					<div>
 						<div >
 							<label for="year">Year:</label>
-							<select id="year" onchange="fetchData(displayResults)">
+							<select id="year" onchange="updatePerformance()">
 								{% if results.get('year') %}
 								    {% for year in results.get('year') %}
 								        <option value="{{ year }}">{{ year }}</option>
@@ -220,7 +220,7 @@
 						</div>
 						<div >
 							<label for="term">Term:</label>
-							<select id="term" onchange="fetchData(displayResults)">
+							<select id="term" onchange="updatePerformance()">
 								{% if results.get('term') %}
 									{% for term in results.get('term') %}
 										<option value="{{ term }}">{{ term }} {{ i }}</option>
@@ -230,7 +230,7 @@
 						</div>
 						<div >
 							<label for="result_type">Result Type:</label>
-							<select id="result_type" onchange="fetchData(displayResults)">
+							<select id="result_type" onchange="updatePerformance()">
 								{% if results.get('result_type') %}
 									{% for result_type in results.get('result_type') %}
 										<option value="{{ result_type }}">{{ result_type }}</option>
@@ -267,12 +267,12 @@
                 <div class="font-medium">Child's Performance Overview</div>
                 <div>
                      <div>
-                         <button class="tablinks" onclick="openTab(event, 'gradeDistribution')">Grade Distribution</button>
+                         <button class="tablinks" onclick="openTab(event, 'gradeDistribution')">subject overview</button>
                         <button class="tablinks" onclick="openTab(event, 'testScores')">Test Scores Over Time</button>
                         <button class="tablinks" onclick="openTab(event, 'performanceTrends')">Performance Trends</button>
                      </div>
                      <div id="gradeDistribution" class="tab">
-                         <canvas id="gradeDistributionChart" width="400" height="200"></canvas>
+                         <canvas id="subjectChart" ></canvas>
                      </div>
                      <div id="testScores" class="tab">
                            <div id="testScoresOverTime"></div>

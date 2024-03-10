@@ -57,6 +57,8 @@ def convert_to_dict(obj) -> list:
         "grade":
         get_grade(result),
         "test_scores":
+        result.total_mark,
+        "percentage":
         f"{get_percentage(result)}%",
         "comments":
         result.comment[:30] +

@@ -38,6 +38,33 @@ document.querySelectorAll('.sidebar-dropdown-toggle').forEach(function (item) {
 
 
 
+
+// Predefined array of colors
+const predefinedColors = [
+	'rgba(54, 162, 235, 0.8)',    // Blue
+	'rgba(255, 99, 132, 0.8)',    // Red
+	'rgba(255, 159, 64, 0.8)',    // Orange
+	'rgba(255, 205, 86, 0.8)',    // Yellow
+	'rgba(75, 192, 192, 0.8)',    // Teal
+	'rgba(153, 102, 255, 0.8)',   // Purple
+	'rgba(255, 102, 204, 0.8)',   // Pink
+	'rgba(102, 204, 0, 0.8)',     // Green
+	'rgba(204, 102, 0, 0.8)',     // Brown
+	'rgba(204, 0, 204, 0.8)',     // Magenta
+	'rgba(255, 51, 153, 0.8)',    // Rose
+	'rgba(102, 153, 204, 0.8)',   // Lavender
+	'rgba(51, 153, 102, 0.8)',    // Jade
+	'rgba(153, 153, 153, 0.8)',   // Gray
+	'rgba(204, 102, 255, 0.8)'    // Orchid
+];
+
+
+
+
+
+
+
+
 // start: Popper
 const popperInstance = {}
 document.querySelectorAll('.dropdown').forEach(function (item, index) {
@@ -146,7 +173,7 @@ document.querySelectorAll('[data-tab]').forEach(function (item) {
 
 
 
-
+let subjectChart; 
 
 
 function fetchData(dataProcced) {
@@ -159,6 +186,7 @@ function fetchData(dataProcced) {
   fetch(apiUrl)
 	.then(response => response.json())
 	.then(data => {
+		
 		dataProcced(data.results);
 	})
 	.catch(error => console.error('Error fetching data:', error));
@@ -173,7 +201,7 @@ function displayResults(results) {
 	row.innerHTML = `
 	  <td class="py-2 px-4 border-b border-b-gray-50"><div class="flex items-center"><a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">${result.subject}</a></div></td>
 	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.grade}</span></td>
-	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.test_scores}</span></td>
+	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.percentage}</span></td>
 	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.comments}</span></td>
 	
 	`;
@@ -183,6 +211,90 @@ function displayResults(results) {
 
 
 
-window.onload = function() {
-	fetchData(displayResults); // Optionally call drawChart here as well
-};
+
+
+
+function createHorizontalBarChart(data) {
+  const subjects = data.map(item => item.subject);
+  const testMarks = data.map(item => item.test_scores);
+  const term = data.map(item => item.term);
+  const result_type = data.map(item => item.result_type);
+
+
+  const colors = predefinedColors.slice(0, subjects.length);
+	
+  const chartData = {
+	labels: subjects,
+	datasets: [{
+	  label: term[0]+" : "+result_type[0] ,
+	  data: testMarks,
+	  backgroundColor: colors,
+	  borderColor: 'rgba(0, 0, 0, 0)',
+	  borderWidth: 1
+	}]
+  };
+
+	// Chart options
+	  const options = {
+		responsive: true,
+		indexAxis: 'y',
+		scales: {
+		  x: {
+			beginAtZero: true,
+			ticks: {
+			  font: {
+				family: 'monospace', 
+				size: 10, 
+			  }
+			}
+		  },
+		  y: {
+			ticks: {
+			  font: {
+				family: 'Verdana', 
+				size: 8, 
+			  }
+			},
+			grid: {
+				display: false
+			}
+		  }
+		}
+	  };
+
+
+  const ctx = document.getElementById('subjectChart').getContext('2d');
+  // If there's an existing chart, destroy it first
+  if (subjectChart) {
+		subjectChart.destroy();
+	}
+ 
+  subjectChart = new Chart(ctx, {
+	type: 'bar',
+	data: chartData,
+	options: options
+  });
+}
+
+
+
+
+
+
+function updatePerformance() {
+	fetchData(createHorizontalBarChart);
+	fetchData(displayResults); 
+}
+
+
+
+
+
+
+
+
+
+window.onload = updatePerformance;
+//window.onload = function() {
+	
+//};
