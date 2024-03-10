@@ -199,7 +199,7 @@ function displayResults(results) {
   results.forEach(result => {
 	const row = document.createElement("tr");
 	row.innerHTML = `
-	  <td class="py-2 px-4 border-b border-b-gray-50"><div class="flex items-center"><a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">${result.subject}</a></div></td>
+	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.subject}</div></td>
 	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.grade}</span></td>
 	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.percentage}</span></td>
 	  <td class="py-2 px-4 border-b border-b-gray-50"><span class="text-[13px] font-medium text-gray-400">${result.comments}</span></td>
@@ -317,6 +317,8 @@ function createDonutChart(data) {
 }
 // end donut chart
 
+
+
 document.getElementById('barChartButton').addEventListener('click', function() {
 	fetchData(createHorizontalBarChart);
 });
@@ -325,6 +327,73 @@ document.getElementById('donutChartButton').addEventListener('click', function()
 });
 
 
+function generateFilename(results, fileExtension) {
+  const filename = `student_${results[0].year}_${results[0].term}_${results[0].result_type}.${fileExtension}`;
+  return filename;
+}
+
+
+function convertToExcel(results) {
+	var workbook = XLSX.utils.book_new();
+	var worksheet = XLSX.utils.json_to_sheet(results);
+	XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+	var excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+	return excelBuffer;
+}
+
+
+
+function downloadData(fileType) {
+  fetchData(results => {
+	let data;
+	let filename;
+	switch (fileType) {
+	  case 'excel':
+		data = convertToExcel(results);
+		filename = generateFilename(results, 'xlsx');
+		break;
+	  case 'csv':
+		data = convertToCSV(results);
+		filename = generateFilename(results, 'csv');
+		break;
+	  case 'json':
+		data = JSON.stringify(results);
+		filename = generateFilename(results, 'json');
+		break;
+	  case 'xml':
+		data = convertToXML(results);
+		filename = generateFilename(results, 'xml');
+		break;
+	  default:
+		console.error('Invalid file type');
+		return;
+	}
+
+	// Create a blob with the data
+	const blob = new Blob([data], { type: 'application/octet-stream' });
+	const link = document.createElement('a');
+	link.href = window.URL.createObjectURL(blob);
+	link.download = filename;
+	link.click();
+	window.URL.revokeObjectURL(link.href);
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+const downloadDropdown = document.getElementById("Download");
+downloadDropdown.addEventListener("change", function() {
+  const selectedFileType = this.value;
+  downloadData(selectedFileType);
+});
 
 
 
