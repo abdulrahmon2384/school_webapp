@@ -1,8 +1,31 @@
 {% extends 'base.html' %}
 
 
+{% block style %}
+     <style>
+		  /* CSS for the calendar */
+		   .day {
+			 border: 1px solid #dee2e6;
+			 text-align: center;
+			 padding: 5px;
+			 height: 5px;
+			 border-radius: 8px; /* Rounded corners */
+		   }
+		   .present {
+			 background-color: #28a745; /* Green */
+		   }
+		   .absent {
+			 background-color: #dc3545; /* Red */
+		   }
+		   .tardy {
+			 background-color: #6c757d; /* Gray */
+		   }
+	 </style>
+{% endblock %}
 
-{% block title %}{% endblock %}
+{% block title %}
+         Gurdians Page
+{% endblock %}
 
 {% block slicebar %}
     <!-- start: Sidebar -->
@@ -280,67 +303,156 @@
         <!-- Performance Area end -->
             
        
-        <!-- Attendance Area -->               
+        <!-- Student Class Details -->               
                 
         <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md">
             <div class="flex justify-between mb-4 items-start">
-                <div class="font-medium">Attendance Area</div>
+                <div class="font-medium">Student Class Details</div>
             </div>
-            <form action="" class="flex items-center mb-4">
-                <div class="relative w-full mr-2">
-                    <input type="text" class="py-2 pr-4 pl-10 bg-gray-50 w-full outline-none border border-gray-100 rounded-md text-sm focus:border-blue-500" placeholder="Search...">
-                    <i class="ri-search-line absolute top-1/2 left-4 -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <select class="text-sm py-2 pl-4 pr-10 bg-gray-50 border border-gray-100 rounded-md focus:border-blue-500 outline-none appearance-none bg-select-arrow bg-no-repeat bg-[length:16px_16px] bg-[right_16px_center]">
-                    <option value="">All</option>
-                </select>
-            </form>
+            
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[540px]">
-                    <div class="calendar" id="calendar"></div>
-                    <thead>
-                        <tr>
-                            <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tl-md rounded-bl-md">Service</th>
-                            <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Price</th>
-                            <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Clicks</th>
-                            <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tr-md rounded-br-md"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="py-2 px-4 border-b border-b-gray-50">
-                                <div class="flex items-center">
-                                    <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                    <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                </div>
-                            </td>
-                            <td class="py-2 px-4 border-b border-b-gray-50">
-                                <span class="text-[13px] font-medium text-gray-400">$235</span>
-                            </td>
-                            <td class="py-2 px-4 border-b border-b-gray-50">
-                                <span class="text-[13px] font-medium text-gray-400">1K</span>
-                            </td>
-                            <td class="py-2 px-4 border-b border-b-gray-50">
-                                <div class="dropdown">
-                                    <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600 text-sm w-6 h-6 rounded flex items-center justify-center bg-gray-50"><i class="ri-more-2-fill"></i></button>
-                                    <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
-                                        <li>
-                                            <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Profile</a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Settings</a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Logout</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+				<div class="container">
+				   <div class="details">
+					  <div class="detail-row">
+						  <div class="detail">
+							  <p>Total Students: 50</p>
+							  <p>Male: 25</p>
+							  <p>Female: 25</p>
+						  </div>
+					  </div>
+					  <div class="detail-row">
+						 <div>
+						    <div>
+								<img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+							</div>
+							<div class="detail">
+								<h2>Class Teacher</h2>
+								<p>Name: Mr./Ms. Teacher's Name</p>
+								<p>Contact: Teacher's Contact Information</p>
+								<p>About: Brief Bio or Description of the Teacher</p>
+							</div>
+						 </div>
+					  </div>
+					  <div class="detail-row">
+						   <table>
+							 <thead>
+								<tr>
+								   <th>Textbook</th>
+								   <th>Author</th>
+								   <th>Amount</th>
+								</tr>
+							 </thead>
+							 <tbody>
+								 <tr>
+									<td>Python for Data Analysis</td>
+									<td>Abdul rahmon</td>
+									<td>$10</td>
+								 </tr>
+							 </tbody>
+						   </table>
+					  </div>
+					  <div class="detail-row">
+						  <div class="detail">
+						      <h2>Class Timetable</h2>
+						  </div>
+						  <div>
+							  <table>
+								<thead>
+								   <tr>
+									  <th>Day</th>
+									  <th>Time</th>
+								   </tr>
+								</thead>
+								<tbody>
+									<tr>
+									   <td>Monday</td>
+									   <td>Mathematics</td>
+									</tr>
+								</tbody>
+							  </table>
+						  </div>
+					  </div>
+						
+				   </div>
+			    </div>
             </div>
         </div>
-  <!-- Attendance Area end -->
-      </div>
+       <!-- Student Class Details end -->
+
+
+		<div class="container">
+		  <h1 class="mt-5 mb-4 text-center">Attendance Calendar</h1>
+		  <div class="row">
+			<div class="col-md-3">
+			  <label for="monthSelect" class="form-label">Select Month:</label>
+			  <select id="monthSelect" class="form-select" onchange="generateCalendar()">
+				<option value="1">January</option>
+				<option value="2">February</option>
+				<option value="3" selected>March</option>
+				<!-- Add more options for other months -->
+			  </select>
+			</div>
+		  </div>
+		  <div class="row mt-3">
+			<div class="col">
+			  <div class="table-responsive">
+				<table class="table table-bordered">
+				  <thead>
+					<tr>
+					  <th scope="col">Sun</th>
+					  <th scope="col">Mon</th>
+					  <th scope="col">Tue</th>
+					  <th scope="col">Wed</th>
+					  <th scope="col">Thu</th>
+					  <th scope="col">Fri</th>
+					  <th scope="col">Sat</th>
+					</tr>
+				  </thead>
+				  <tbody id="calendar"></tbody>
+				</table>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		<div>
+			<div class="row">
+				<div class="col-md-3">
+				  <label for="monthSelect" class="form-label">Select Month:</label>
+				  <select id="monthSelect" class="form-select" onchange="generateCalendar()">
+					<option value="4">April</option>
+					<option value="5">May</option>
+					<option value="6" selected>June</option>
+					<!-- Add more options for other months -->
+				  </select>
+				</div>
+			  </div>
+			  <div class="row mt-3">
+				<div class="col">
+				  <div class="table-responsive">
+					<table class="table table-bordered">
+					  <thead>
+						<tr>
+						  <th scope="col">Sun</th>
+						  <th scope="col">Mon</th>
+						  <th scope="col">Tue</th>
+						  <th scope="col">Wed</th>
+						  <th scope="col">Thu</th>
+						  <th scope="col">Fri</th>
+						  <th scope="col">Sat</th>
+						</tr>
+					  </thead>
+					  <tbody id="calendar"></tbody>
+					</table>
+				  </div>
+				</div>
+			  </div>
+		</div>
+			
 {% endblock %}
+{% block script %}
+		  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+		  <script src="{{ url_for('static', filename='js/student.js') }}"></script>
+{% endblock %}
+
+
+		  

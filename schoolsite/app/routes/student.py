@@ -7,8 +7,8 @@ from schoolsite.app.functions import *
 student_bp = Blueprint('student', __name__)
 
 school_name = "School Name"
-number_of_event = 6
-number_of_annoucement = 2
+number_of_event = 3
+number_of_annoucement = 1
 
 
 @student_bp.route('/guardian', methods=['GET'])

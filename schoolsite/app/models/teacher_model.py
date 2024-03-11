@@ -24,8 +24,10 @@ class Teacher(db.Model, UserMixin):
     current_salary = db.Column(db.Integer, nullable=True)
     salarys = db.Column(db.JSON, nullable=True)
     subject_taught = db.Column(db.JSON, nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    marital_status = db.Column(db.String(50), nullable=True)
 
-    role = db.Column(db.String(50), default=None)
+    role = db.Column(db.String(50), default='Teacher')
     key = db.Column(db.String(200), nullable=True)
     access = db.Column(db.Boolean, default=False)
     image_link = db.Column(db.String(200),

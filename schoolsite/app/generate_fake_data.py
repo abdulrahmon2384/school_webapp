@@ -198,7 +198,9 @@ def generate_fake_teachers(n):
             key=hashed_password,
             access=fake.boolean(),
             salarys=generate_yearly_salary_json([2021, 2022, 2023]),
-            subject_taught=generate_random_subjects(3))
+            subject_taught=generate_random_subjects(3),
+		    bio = fake.text(),
+		    marital_status = fake.random_element(elements=('Single', 'Married')))
         teachers.append(teacher)
     return teachers
 
