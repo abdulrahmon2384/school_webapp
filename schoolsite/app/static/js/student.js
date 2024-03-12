@@ -210,55 +210,59 @@ downloadDropdown.addEventListener("change", function() {
   const selectedFileType = this.value;
   downloadData(selectedFileType);
 });
+// Download area end 
 
 
+let attendanceData = {}
 
 
+// Function to update attendance data based on selected year and month
+function updateAttendanceData() {
+	fetchAttendanceData(extractAttendanceStatus);
+	generateCalendar();
+}
 
+// Event listener for the "Attendance-filter" button
+const attendanceFilter = document.getElementById("Attendance-filter");
+attendanceFilter.addEventListener("click", () => {
+	updateAttendanceData();
+});
 
+// Event listener for the year dropdown menu
+const yearSelect = document.getElementById("year-select");
+yearSelect.addEventListener("change", () => {
+	updateAttendanceData();
+});
 
+// Event listener for the month dropdown menu
+const monthSelect = document.getElementById("month-select");
+monthSelect.addEventListener("change", () => {
+	updateAttendanceData();
+});
 
+// Function to fetch attendance data from the server
+function fetchAttendanceData(dataProcessed) {
+	const year = yearSelect.value;
+	const month = monthSelect.value;
+	const apiUrl = `/api/attendance?year=${year}&username=acarter&month=${month}`;
 
-
-
-// Sample attendance data (replace with actual data)
-const attendanceData = {
-"2024-03-01": "present",
-"2024-03-02": "absent",
-"2024-03-03": "weekend",
-"2024-04-07": 'present'
-// Add more dates and attendance status here...
-};
-
-
+	fetch(apiUrl)
+		.then(response => response.json())
+		.then(data => {
+			dataProcessed(data.attendance);
+			generateCalendar();
+		})
+		.catch(error => console.error('Error fetching data:', error));
+}
 
 // Function to extract morning_attendance and status
 function extractAttendanceStatus(apiData) {
-attendanceData = {};
-
-apiData.forEach(item => {
-  const date = item.morning_attendance;
-  const status = item.status;
-  attendanceData[date] = status;
-  console.log(attendanceData);
-});
-}
-
-
-
-function fetchAttendanceData(dataProcced) {
-const term = document.getElementById("term-select").value;
-//const username = document.getElementById("username").value;
-
-const apiUrl = `/api/attendance?term=${term}&username=ahenderson`;
-
-fetch(apiUrl)
-.then(response => response.json())
-.then(data => {
-
-  dataProcced(data.attendance);
-})
-.catch(error => console.error('Error fetching data:', error));
+	attendanceData = {};
+	apiData.forEach(item => {
+		const date = item.morning_attendance;
+		const status = item.status;
+		attendanceData[date] = status;
+	});
 }
 
 
@@ -266,15 +270,15 @@ fetch(apiUrl)
 
 
 // Function to generate calendar view for a specific month
-function generateCalendar(month) {
+function generateCalendar() {
 const calendarElement = document.getElementById("calendar");
+const currentmonth = monthSelect.value;
+const currentYear = yearSelect.value;
+	
+
 calendarElement.innerHTML = ""; // Clear previous calendar
-
-const currentDate = new Date();
-const currentYear = currentDate.getFullYear();
-
-const daysInMonth = new Date(currentYear, month, 0).getDate();
-const firstDay = new Date(currentYear, month - 1, 1).getDay(); // Day of the week of the first day
+const daysInMonth = new Date(currentYear, currentmonth, 0).getDate();
+const firstDay = new Date(currentYear, currentmonth - 1, 1).getDay(); // Day of the week of the first day
 
 // Create header row for days of the week
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -294,7 +298,7 @@ for (let i = 0; i < firstDay; i++) {
 
 // Fill in days of the month
 for (let i = 1; i <= daysInMonth; i++) {
-  const date = `${currentYear}-${month.toString().padStart(2, "0")}-${i.toString().padStart(2, "0")}`;
+  const date = `${currentYear}-${currentmonth.toString().padStart(2, "0")}-${i.toString().padStart(2, "0")}`;
   const dayElement = document.createElement("div");
   dayElement.classList.add("calendar-day");
 
@@ -308,50 +312,12 @@ for (let i = 1; i <= daysInMonth; i++) {
 }
 
 
-function handleMonthChange() {
-const monthSelect = document.getElementById("month-select");
-const selectedMonth = parseInt(monthSelect.value);
-generateCalendar(selectedMonth);
-}
-
-function handleTermChange() {
-fetchAttendanceData(extractAttendanceStatus);
-}
-
-
-const monthSelect = document.getElementById("month-select");
-monthSelect.addEventListener("change", handleMonthChange);
-
-//const termSelect = document.getElementById("term-select");
-//termSelect.addEventListener("change", handleTermChange);
-
-
-// Initialize calendar for the current month
-const currentMonth = new Date().getMonth() + 1; // Months are zero-indexed
-console.log(currentMonth)
-generateCalendar(currentMonth);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function updatePerformance() {
 	fetchData(createHorizontalBarChart);
 	fetchData(displayResults);
+	updateAttendanceData();
 }
+
 window.onload = updatePerformance;

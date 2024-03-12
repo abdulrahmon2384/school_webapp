@@ -429,29 +429,28 @@
 
 		<div class="container">
 			<div>
-			<div>
-			  <select id="term-select">
-				{% if unique_attendance_option %}
-				    {% for option in unique_attendance_option %}
-						<option value="{{ option }}">{{ option }}</option>
-				    {% endfor %}
-				{% else %}
-					<option value="first term">Unknown</option>
-				{% endif %}
-			  </select>
+				<div class="font-medium">Class Attendance</div>
 			</div>
 			<div>
-			  <select id="month-select">
-				  {% if unique_attendance_option %}
-					  {% for options in unique_attendance_option.values() %}
-				          {% for option in options %}
-						      <option value="{{ option }}">{{ months[option] }}</option>
-				          {% endfor %}
+				<div>
+					<select id="year-select" class="filterSelect">
+						{% if results.get('year') %}
+							{% for year in results.get('year') %}
+								<option value="{{ year }}">{{ year }}</option>
+							{% endfor %}
+						{% endif %}
+					</select>
+				</div>
+				<div>
+				  <select id="month-select" class="filterSelect">
+					  {% for month in months[1:] %}
+						  <option value="{{ loop.index }}">{{ month }}</option>
 					  {% endfor %}
-				  {% else %}
-					  <option value="first term">Unknown</option>
-				  {% endif %}
-			  </select>
+				  </select>
+				</div>
+				<div>
+					<button id="Attendance-filter"  >Filter</button>
+				</div>
 			</div>
 			<div class="calendar" id="calendar"></div>
 		</div>

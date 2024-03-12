@@ -6,7 +6,6 @@ from schoolsite.app.functions import *
 student_api_bp = Blueprint('student_api', __name__)
 
 
-
 @student_api_bp.route('/api/student/performance', methods=['GET'])
 @login_required
 def performance():
@@ -26,23 +25,24 @@ def performance():
 @student_api_bp.route('/api/attendance', methods=['GET'])
 @login_required
 def get_user_attendance():
-    term = request.args.get('term')
     username = request.args.get('username', current_user.username)
-    year = request.args.get('currentyear')
+    year = request.args.get('year')
+    month = request.args.get('month')
 
-    if not (term and username):
+    if not all([year, username, month]):
         return jsonify({"error":
-                        "Please provide term, username, and year."}), 400
+                        "Please provide month, username, and year."}), 400
 
-    if not year:
+    if year == '2050':
         year = 'fake-year'
 
     if year != 'fake-year':  #implement if year equal current year
         role = current_user.role if username == current_user.username else None
-        attendance = fetch_historical_or_current_attendance(username, term, role)
+        attendance = fetch_historical_or_current_attendance(
+            username, year, month, role)
     else:
         attendance = fetch_historical_or_current_attendance(
-            username, term, 'Student')
+            username, year, month, 'Student')
 
     if attendance:
         return jsonify({"attendance": attendance}), 200

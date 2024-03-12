@@ -4,7 +4,6 @@ from flask import render_template, flash, request, url_for, redirect, jsonify
 from datetime import datetime
 import math, itertools, collections, sqlalchemy, typing
 
-
 grades = {'A+': 90, 'A': 80, 'B': 70, 'C': 60, 'D': 50, 'F': 40}
 
 
@@ -106,19 +105,31 @@ def columns(dicts: typing.Iterable, columns: typing.Iterable) -> dict:
 
 
 def fetch_historical_data(username: str,
-                          term: str,
+                          year: str,
                           user: str,
-                          year: str = '') -> None:
+                          month: str,
+                          term: str = '') -> None:
     pass
 
 
-def fetch_attendance(username: str, term: str, user: str) -> list:
+def fetch_attendance(username: str, month: str, year: str, user: str) -> list:
     if user == 'Teacher':
-        attendance_records = TeacherAttendance.query.filter_by(
-            teacher_username=username, term=term).all()
+        attendance_records = TeacherAttendance.query.filter(
+            TeacherAttendance.teacher_username == username,
+            sqlalchemy.func.extract(
+                'month', TeacherAttendance.morning_attendance) == int(month),
+            sqlalchemy.func.extract(
+                'year',
+                TeacherAttendance.morning_attendance) == int(year)).all()
+
     else:
-        attendance_records = StudentAttendance.query.filter_by(
-            student_username=username, term=term).all()
+        attendance_records = StudentAttendance.query.filter(
+            StudentAttendance.student_username == username,
+            sqlalchemy.func.extract(
+                'month', StudentAttendance.morning_attendance) == int(month),
+            sqlalchemy.func.extract(
+                'year',
+                StudentAttendance.morning_attendance) == int(year)).all()
 
     attendance_records_to_dict = attendance_to_dict(attendance_records)
     return attendance_records_to_dict
@@ -134,15 +145,19 @@ def fetch_performance_data(year, term, result_type, username):
     return to_list
 
 
-def fetch_historical_or_current_attendance(username, term, role):
+def fetch_historical_or_current_attendance(username, year, month, role):
     if role and role in ['Teacher', 'Admin']:
-        attendance = fetch_historical_data(username, term, 'Teacher')
+        attendance = fetch_historical_data(username, year, month, 'Teacher')
         if not attendance:
-            attendance = fetch_historical_data(username, term, 'Student')
+            attendance = fetch_historical_data(username, year, month,
+                                               'Student')
     else:
-        attendance = fetch_attendance(username, term, 'Teacher')
+        attendance = fetch_attendance(username, month, year, user='Teacher')
         if not attendance:
-            attendance = fetch_attendance(username, term, 'Student')
+            attendance = fetch_attendance(username,
+                                          month,
+                                          year,
+                                          user='Student')
 
     return attendance
 
@@ -153,14 +168,14 @@ def convert_class_records_to_dict(records: typing.Iterable) -> dict:
     if students:
         gender = collections.Counter([student.gender for student in students])
         records_dict = {
-	        "num_of_students": sum(gender.values()),
-	        "num_of_male": gender['Male'],
-	        "num_of_female": gender['Female'],
-	        "name": records.class_name,
-	        "subjects": records.class_subjects,
-	        "books": records.class_books,
-	        "timetable": records.class_time_table,
-	    }
+            "num_of_students": sum(gender.values()),
+            "num_of_male": gender['Male'],
+            "num_of_female": gender['Female'],
+            "name": records.class_name,
+            "subjects": records.class_subjects,
+            "books": records.class_books,
+            "timetable": records.class_time_table,
+        }
         return records_dict
     return records_dict
 
@@ -170,36 +185,3 @@ def fetch_class_details(classid: str) -> tuple:
     class_details_dict = convert_class_records_to_dict(class_records)
     teacher_about = class_records.teacher.about()
     return class_details_dict, teacher_about
-
-
-def fetch_attendance_options(username: str, user_role: str) -> list:
-    if user_role == 'Teacher':
-        attendance_records = TeacherAttendance.query.with_entities(
-            TeacherAttendance.term,
-			sqlalchemy.func.extract('month',
-                         TeacherAttendance.morning_attendance)).filter(
-                             TeacherAttendance.teacher_username ==
-                             username).distinct().all()
-    else:
-        attendance_records = StudentAttendance.query.with_entities(
-            StudentAttendance.term,
-			sqlalchemy.func.extract('month',
-                         StudentAttendance.morning_attendance)).filter(
-                             StudentAttendance.student_username ==
-                             username).distinct().all()
-    #dont worry about this it only conver the resul to key: value pair {key:[values , values]}
-    attendance_to_dict = mapped_data = {term: [value for _, value in group] for term, group in itertools.groupby(attendance_records, key=lambda x: x[0])}
-    return attendance_to_dict
-
-
-def fetch_user_attendance_options(username: str) -> list:
-    if username:
-        user = Teacher.query.filter_by(username=username).first()
-        if not user:
-            user = Student.query.filter_by(username=username).first()
-
-        if user:
-            attendance_option = fetch_attendance_options(
-                user.username, user.role)
-            return attendance_option
-    return attendance_option

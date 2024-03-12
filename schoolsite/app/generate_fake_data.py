@@ -335,20 +335,14 @@ def generate_fake_attendance(model, persons, terms, role='Student'):
             ]
 
             for date in date_range:
-                morning_attendance = choice(
-                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
-                if morning_attendance > 3:
-                    morning_attendance = date
 
-                else:
-                    morning_attendance = None
-
-                evening_attendance = morning_attendance + timedelta(
-                    hours=7) if morning_attendance else None
+                morning_attendance = date
+                evening_attendance = morning_attendance + timedelta(hours=7)
 
                 comment = fake.text()
-                status = fake.random_element(elements=('Present', 'Absent',
-                                                       'Late'))
+                status = fake.random_element(elements=('present', 'absent',
+                                                       'present', 'present',
+                                                       'present'))
                 late_arrival = fake.boolean(
                     chance_of_getting_true=30) if status == 'Late' else None
 
@@ -378,6 +372,20 @@ def generate_fake_attendance(model, persons, terms, role='Student'):
 
 
 with app.app_context():
+	students = Student.query.all()
+	term = {
+		'first term': [datetime(2024, 1, 1),
+					   datetime(2024, 3, 31)],
+		'second term': [datetime(2024, 4, 1),
+						datetime(2024, 7, 31)],
+		'third term': [datetime(2024, 8, 1),
+					   datetime(2024, 11, 30)],
+	}
+	students_attendance = generate_fake_attendance(StudentAttendance, students,
+												   term)
+	db.session.add_all(students_attendance)
+	db.session.commit()
+"""
     db.create_all()
     admins = generate_fake_admins(2)
     db.session.add_all(admins)
@@ -420,7 +428,7 @@ with app.app_context():
         'second term': [datetime(2023, 4, 1),
                         datetime(2023, 7, 31)],
         'third term': [datetime(2023, 8, 1),
-                       datetime(2023, 11, 30)]
+                       datetime(2023, 11, 30)],
     }
     students_attendance = generate_fake_attendance(StudentAttendance, students,
                                                    term)
@@ -438,5 +446,5 @@ with app.app_context():
 
     annoucements = write_announcements_to_db(annoucement)
     db.session.add_all(annoucements)
-    db.session.commit()
-    print("Done.......")
+    db.session.commit() 
+    print("Done.......")"""
