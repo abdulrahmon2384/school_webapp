@@ -4,17 +4,18 @@ from flask_login import login_user, current_user
 from flask import render_template, flash, request, url_for, redirect, jsonify
 from datetime import datetime
 import math
+from collections import Counter
 
 grades = {'A+': 90, 'A': 85, 'A-': 80, 'B+': 75, 'B': 70}
 
 
-def get_latest_events(n: int) -> list:
+def fetch_latest_events(n: int) -> list:
     ordered_event = Event.query.order_by(Event.date)
     top_events = ordered_event.limit(n).all()
     return top_events
 
 
-def get_latest_announcements(n: int) -> list:
+def fetch_latest_announcements(n: int) -> list:
     ordered_announcement = Announcement.query.order_by(Announcement.created_at)
     top_announcements = ordered_announcement.limit(n).all()
     return top_announcements
@@ -24,7 +25,7 @@ def calculate_percentage(total_marks: int, marks_obtained: int) -> float:
     return (total_marks / marks_obtained) * 100
 
 
-def get_grade(result, grades: dict = grades) -> str:
+def fetch_grade(result, grades: dict = grades) -> str:
     marks_obtained = result.marks_obtain
     total_marks = result.total_mark
     percentage = calculate_percentage(total_marks, marks_obtained)
@@ -40,11 +41,11 @@ def convert_date_string(date_string):
     return formatted_date
 
 
-def get_percentage(result) -> int:
+def to_percentage(result) -> int:
     marks_obtained = result.marks_obtain
     total_marks = result.total_mark
 
-    percentage = (total_marks / marks_obtained) * 100
+    percentage = calculate_percentage(total_marks, marks_obtained)
     return int(percentage)
 
 
@@ -75,11 +76,11 @@ def results_to_dict(obj) -> list:
         "result_type":
         result.result_type,
         "grade":
-        get_grade(result),
+        fetch_grade(result),
         "test_scores":
         result.total_mark,
         "percentage":
-        f"{get_percentage(result)}%",
+        f"{to_percentage(result)}%",
         "comments":
         result.comment[:30] +
         "..." if len(result.comment) > 20 else result.comment
@@ -87,14 +88,14 @@ def results_to_dict(obj) -> list:
     return to_dict
 
 
-def get_student_result(student_username: str) -> list:
+def fetch_student_result(student_username: str) -> list:
     student_result = Results.query.filter_by(
         student_username=student_username).all()
     to_list = results_to_dict(student_result)
     return to_list
 
 
-def get_columns(dicts: dict, columns: Iterable) -> dict:
+def columns(dicts: Iterable, columns: Iterable) -> dict:
     result_columns = {}
     for column in columns:
         values = {row[column] for row in dicts}
@@ -102,26 +103,26 @@ def get_columns(dicts: dict, columns: Iterable) -> dict:
     return result_columns
 
 
-def get_historical_data(username: str,
-                        term: str,
-                        user: str,
-                        year: str = '') -> None:
+def fetch_historical_data(username: str,
+                          term: str,
+                          user: str,
+                          year: str = '') -> None:
     pass
 
 
-def get_attendance(username: str, term: str, user: str) -> list:
+def fetch_attendance(username: str, term: str, user: str) -> list:
     if user == 'Teacher':
-        attendance = TeacherAttendance.query.filter_by(
+        attendance_records = TeacherAttendance.query.filter_by(
             teacher_username=username, term=term).all()
     else:
-        attendance = StudentAttendance.query.filter_by(
+        attendance_records = StudentAttendance.query.filter_by(
             student_username=username, term=term).all()
-    print(sum([1 for attendance in attendance if attendance]))
-    to_dict = attendance_to_dict(attendance)
-    return to_dict
+
+    attendance_records_to_dict = attendance_to_dict(attendance_records)
+    return attendance_records_to_dict
 
 
-def get_performance_data(year, term, result_type, username):
+def fetch_performance_data(year, term, result_type, username):
     user = username if username else current_user.username
     results = Results.query.filter_by(year=year,
                                       term=term,
@@ -131,14 +132,36 @@ def get_performance_data(year, term, result_type, username):
     return to_list
 
 
-def get_historical_or_current_attendance(username, term, role):
+def fetch_historical_or_current_attendance(username, term, role):
     if role and role in ['Teacher', 'Admin']:
-        attendance = get_historical_data(username, term, 'Teacher')
+        attendance = fetch_historical_data(username, term, 'Teacher')
         if not attendance:
-            attendance = get_historical_data(username, term, 'Student')
+            attendance = fetch_historical_data(username, term, 'Student')
     else:
-        attendance = get_attendance(username, term, 'Teacher')
+        attendance = fetch_attendance(username, term, 'Teacher')
         if not attendance:
-            attendance = get_attendance(username, term, 'Student')
+            attendance = fetch_attendance(username, term, 'Student')
 
     return attendance
+
+
+def convert_class_records_to_dict(records: Iterable) -> dict:
+    students = Student.query.filter(Student.class_id == records.id).all()
+    gender = Counter([student.gender for student in students])
+    records_dict = {
+        "num_of_students": sum(gender.values()),
+        "num_of_male": gender['Male'],
+        "num_of_female": gender['Female'],
+        "name": records.class_name,
+        "subjects": records.class_subjects,
+        "books": records.class_books,
+        "timetable": records.class_time_table,
+    }
+    return records_dict
+
+
+def fetch_class_details(classid: str) -> dict:
+    class_records = Class.query.filter_by(id=classid).all()[0]
+    class_details_dict = convert_class_records_to_dict(class_records)
+    teacher_about = class_records.teacher.about()
+    return class_details_dict, teacher_about

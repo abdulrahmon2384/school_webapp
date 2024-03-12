@@ -2,25 +2,41 @@
 
 
 {% block style %}
-     <style>
-		  /* CSS for the calendar */
-		   .day {
-			 border: 1px solid #dee2e6;
-			 text-align: center;
-			 padding: 5px;
-			 height: 5px;
-			 border-radius: 8px; /* Rounded corners */
-		   }
-		   .present {
-			 background-color: #28a745; /* Green */
-		   }
-		   .absent {
-			 background-color: #dc3545; /* Red */
-		   }
-		   .tardy {
-			 background-color: #6c757d; /* Gray */
-		   }
-	 </style>
+	<style>
+		.filter {
+		  margin-top: 20px;
+		}
+
+		.filterSelect {
+		  padding: 5px;
+		}
+		.calendar {
+		  display: grid;
+		  grid-template-columns: repeat(7, 1fr);
+		  gap: 5px;
+		}
+
+		.day {
+		  width: 30px;
+		  height: 30px;
+		  border-radius: 50%;
+		  text-align: center;
+		  line-height: 30px;
+		}
+
+		.present {
+		  background-color: green;
+		}
+
+		.absent {
+		  background-color: red;
+		}
+
+		.tardy {
+		  background-color: yellow;
+		}
+
+	</style>
 {% endblock %}
 
 {% block title %}
@@ -31,7 +47,11 @@
     <!-- start: Sidebar -->
     <div class="fixed left-0 top-0 w-64 h-full bg-gray-900 p-4 z-50 sidebar-menu transition-transform">
         <a href="#" class="flex items-center pb-4 border-b border-b-gray-800">
-            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover">
+			{% if current_user.image_link == 'default.png' %}
+				<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+			{% else %}
+				<img src="{{ current_user.image_link }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+			{% endif %}
             <span class="text-lg font-bold text-white ml-3">{{ current_user }}</span>
         </a>
         <ul class="mt-4">
@@ -135,7 +155,12 @@
                <!-- profilr area -->
                 <li class="dropdown ml-3">
                     <button type="button" class="dropdown-toggle flex items-center">
-                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+						{% if current_user.image_link == 'default.png' %} 
+							<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+						{% else %}
+							<img src="{{ current_user.image_link }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+						{% endif %}
+
                     </button>
                     <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
                         <li>
@@ -231,9 +256,9 @@
                 </div>
                 <div>
 					<div>
-						<div >
+						<div class="filter">
 							<label for="year">Year:</label>
-							<select id="year" onchange="updatePerformance()">
+							<select id="year" onchange="updatePerformance()" class="filterSelect">
 								{% if results.get('year') %}
 								    {% for year in results.get('year') %}
 								        <option value="{{ year }}">{{ year }}</option>
@@ -241,9 +266,9 @@
                                 {% endif %}
 							</select>
 						</div>
-						<div >
+						<div class="filter">
 							<label for="term">Term:</label>
-							<select id="term" onchange="updatePerformance()">
+							<select id="term" onchange="updatePerformance()" class="filterSelect">
 								{% if results.get('term') %}
 									{% for term in results.get('term') %}
 										<option value="{{ term }}">{{ term }} {{ i }}</option>
@@ -251,9 +276,9 @@
 							    {% endif %}
 							</select>
 						</div>
-						<div >
+						<div class="filter">
 							<label for="result_type">Result Type:</label>
-							<select id="result_type" onchange="updatePerformance()">
+							<select id="result_type" onchange="updatePerformance()" class="filterSelect">
 								{% if results.get('result_type') %}
 									{% for result_type in results.get('result_type') %}
 										<option value="{{ result_type }}">{{ result_type }}</option>
@@ -277,12 +302,14 @@
                             </tbody>
                         </table>
                     </div>
-					<select id="Download">
-						<option >Download</option>
-						{% for file in ['excel', 'csv', 'json', 'xml'] %}
-							  <option value="{{ file }}">{{ file }}</option>
-						{% endfor %}
-					</select>
+					<div class="filter">
+						<select id="Download" class="filterSelect">
+							<option >Download</option>
+							{% for file in ['excel', 'csv', 'json', 'xml'] %}
+								  <option value="{{ file }}">{{ file }}</option>
+							{% endfor %}
+						</select>
+					</div>
                 </div>
                 
                 
@@ -315,21 +342,31 @@
 				   <div class="details">
 					  <div class="detail-row">
 						  <div class="detail">
-							  <p>Total Students: 50</p>
-							  <p>Male: 25</p>
-							  <p>Female: 25</p>
+							  <p>Total Students: {{ class_details.get("num_of_students") }}</p>
+							  <p>Male: {{ class_details.get("num_of_male") }}</p>
+							  <p>Female: {{ class_details.get("num_of_female") }}</p>
 						  </div>
 					  </div>
 					  <div class="detail-row">
 						 <div>
 						    <div>
-								<img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+								{% if teacher.get('image') == 'default.png' %} 
+									<img src="{{ url_for('static', filename='default.png') }}" alt="Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								{% else %}
+									<img src="{{ teacher.get('image') }}" alt="Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								{% endif %}
 							</div>
 							<div class="detail">
-								<h2>Class Teacher</h2>
-								<p>Name: Mr./Ms. Teacher's Name</p>
-								<p>Contact: Teacher's Contact Information</p>
-								<p>About: Brief Bio or Description of the Teacher</p>
+								<div>Class Teacher</div>
+								<div>
+									<p><span>Name:&nbsp;</span>&nbsp;{{ teacher.get('marital_status') }}. {{ teacher.get('name') }}</p><br>
+									<span>Contact&nbsp;</span>
+								</div>
+								<ul>
+									<li><span>Email:&nbsp;</span>&nbsp;{{ teacher.get('contact').get('email') }}</li>
+									<li><span>Phonenumber:&nbsp;</span>&nbsp;{{ teacher.get('contact').get('phonenumber') }}</li>
+									<li><span>About:&nbsp;</span>&nbsp;{{ teacher.get('bio') }}</li>
+								</ul>
 							</div>
 						 </div>
 					  </div>
@@ -343,11 +380,13 @@
 								</tr>
 							 </thead>
 							 <tbody>
-								 <tr>
-									<td>Python for Data Analysis</td>
-									<td>Abdul rahmon</td>
-									<td>$10</td>
-								 </tr>
+								 {% for  _ in class_details.get("books") %}
+									 <tr>
+										<td>{{ class_details.get("books")["books"][ loop.index-1] }} </td>
+										<td>{{ class_details.get("books")["authors"][ loop.index-1] }}</td>
+										<td>{{ class_details.get("books")["amounts"][ loop.index-1] }}</td>
+									 </tr>
+								 {% endfor %}
 							 </tbody>
 						   </table>
 					  </div>
@@ -360,14 +399,22 @@
 								<thead>
 								   <tr>
 									  <th>Day</th>
-									  <th>Time</th>
+									  {% for _ in range(table_row) %}
+									     <th>{{ class_details.get("timetable")['Times'][loop.index-1] }}</th>
+									  {% endfor %}
 								   </tr>
 								</thead>
 								<tbody>
-									<tr>
-									   <td>Monday</td>
-									   <td>Mathematics</td>
-									</tr>
+									{% for key in class_details.get("timetable").keys() %}
+									    {% if key != 'Times' %}
+										    <tr>
+											   <td>{{ key }}</t>
+											   {% for _ in range(table_row) %}
+											       <td>{{ class_details.get("timetable")[key][loop.index-1] }}</td>
+											   {% endfor %}
+										    </tr>
+								        {% endif %}
+									{% endfor %}
 								</tbody>
 							  </table>
 						  </div>
@@ -381,71 +428,31 @@
 
 
 		<div class="container">
-		  <h1 class="mt-5 mb-4 text-center">Attendance Calendar</h1>
-		  <div class="row">
-			<div class="col-md-3">
-			  <label for="monthSelect" class="form-label">Select Month:</label>
-			  <select id="monthSelect" class="form-select" onchange="generateCalendar()">
-				<option value="1">January</option>
-				<option value="2">February</option>
-				<option value="3" selected>March</option>
-				<!-- Add more options for other months -->
+			<div>
+			<div>
+			  <select id="term-select">
+				<option value="first term">first term</option>
+				<option value="second term">second term </option>
+				<option value="third term">third term</option>
 			  </select>
 			</div>
-		  </div>
-		  <div class="row mt-3">
-			<div class="col">
-			  <div class="table-responsive">
-				<table class="table table-bordered">
-				  <thead>
-					<tr>
-					  <th scope="col">Sun</th>
-					  <th scope="col">Mon</th>
-					  <th scope="col">Tue</th>
-					  <th scope="col">Wed</th>
-					  <th scope="col">Thu</th>
-					  <th scope="col">Fri</th>
-					  <th scope="col">Sat</th>
-					</tr>
-				  </thead>
-				  <tbody id="calendar"></tbody>
-				</table>
-			  </div>
+			<div>
+			  <select id="month-select">
+				<option value="1">January</option>
+				<option value="2">February</option>
+				<option value="3">March</option>
+				<option value="4">April</option>
+				<option value="5">May</option>
+				<option value="6">June</option>
+				<option value="7">July</option>
+				<option value="8">August</option>
+				<option value="9">September</option>
+				<option value="10">October</option>
+				<option value="11">November</option>
+				<option value="12">December</option>
+			  </select>
 			</div>
-		  </div>
-		</div>
-		<div>
-			<div class="row">
-				<div class="col-md-3">
-				  <label for="monthSelect" class="form-label">Select Month:</label>
-				  <select id="monthSelect" class="form-select" onchange="generateCalendar()">
-					<option value="4">April</option>
-					<option value="5">May</option>
-					<option value="6" selected>June</option>
-					<!-- Add more options for other months -->
-				  </select>
-				</div>
-			  </div>
-			  <div class="row mt-3">
-				<div class="col">
-				  <div class="table-responsive">
-					<table class="table table-bordered">
-					  <thead>
-						<tr>
-						  <th scope="col">Sun</th>
-						  <th scope="col">Mon</th>
-						  <th scope="col">Tue</th>
-						  <th scope="col">Wed</th>
-						  <th scope="col">Thu</th>
-						  <th scope="col">Fri</th>
-						  <th scope="col">Sat</th>
-						</tr>
-					  </thead>
-					  <tbody id="calendar"></tbody>
-					</table>
-				  </div>
-				</div>
-			  </div>
+			<div class="calendar" id="calendar"></div>
 		</div>
 			
 {% endblock %}

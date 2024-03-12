@@ -31,7 +31,7 @@ class Teacher(db.Model, UserMixin):
     key = db.Column(db.String(200), nullable=True)
     access = db.Column(db.Boolean, default=False)
     image_link = db.Column(db.String(200),
-                           default='schoolsite/app/default.png')
+                           default='default.png')
 
     class_teacher = db.relationship("Class", backref="teacher", lazy="dynamic")
     attendance = db.relationship("TeacherAttendance",
@@ -46,6 +46,31 @@ class Teacher(db.Model, UserMixin):
 
     def get_id(self):
         return self.username
+
+    def marital_status_options(self):
+			   title_map = {
+				   ('Single', 'Male'): 'Mr',
+				   ('Single', 'Female'): 'Miss',
+				   ('Married', 'Male'): 'Mr',
+				   ('Married', 'Female'): 'Mrs',
+				   ('Divorced', 'Male'): 'Mr',
+				   ('Divorced', 'Female'): 'Mrs',
+				   ('Widowed', 'Male'): 'Mr',
+				   ('Widowed', 'Female'): 'Mrs',
+			   }
+
+			   title = title_map.get((self.marital_status, self.gender), 'Unknown')
+			   return title
+		
+    def about(self):
+        return {
+			"name": f"{self.lastname} {self.firstname}",
+			"subject_taught": self.subject_taught,
+			"contact": {'email': self.phonenumber, 'phonenumber': self.email},
+			"bio": self.bio,
+			"image": self.image_link,
+			"marital_status": self.marital_status_options()
+		}
 
 
 class TeacherAttendance(db.Model):

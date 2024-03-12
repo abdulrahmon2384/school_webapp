@@ -199,8 +199,8 @@ def generate_fake_teachers(n):
             access=fake.boolean(),
             salarys=generate_yearly_salary_json([2021, 2022, 2023]),
             subject_taught=generate_random_subjects(3),
-		    bio = fake.text(),
-		    marital_status = fake.random_element(elements=('Single', 'Married')))
+            bio=fake.text(),
+            marital_status=fake.random_element(elements=('Single', 'Married')))
         teachers.append(teacher)
     return teachers
 
@@ -213,7 +213,7 @@ def generate_fake_classes(teachers, class_names):
         class_subjects = {'subjects': generate_random_subjects(10)}
         class_books = {
             'books': generate_student_textbooks(5),
-            'authors': [fake.name() for i in range(5)],
+            'authors': [fake.name() for i in range(2)],
             'amounts': [random.randint(2000, 4000) for i in range(5)]
         }
         class_description = fake.text()
@@ -274,7 +274,7 @@ def generate_fake_results(students, terms, result_types):
                 for subject in subjects:
                     date = fake.date_between(start_date='-1y', end_date='now')
                     result = Results(result_type=result_type,
-									 year=str(date.year),
+                                     year=str(date.year),
                                      term=term,
                                      subject=subject,
                                      marks_obtain=100,
@@ -324,41 +324,56 @@ def generate_fake_attendance(model, persons, terms, role='Student'):
     attendance_list = []
     for person in persons:
         for term, date in terms.items():
-            random_date = fake.date_between(start_date=date[0],
-                                            end_date=date[1])
+            # Define start and end dates
+            start_date = date[0]
+            end_date = date[1]
 
-            morning_attendance = random_date
+            # Generate date range
+            date_range = [
+                start_date + timedelta(days=x)
+                for x in range((end_date - start_date).days + 1)
+            ]
 
-            # Calculate evening attendance with a fixed time difference
-            evening_attendance = morning_attendance + timedelta(
-                hours=7) if morning_attendance else None
+            for date in date_range:
+                morning_attendance = choice(
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+                if morning_attendance > 3:
+                    morning_attendance = date
 
-            comment = fake.text()
-            status = fake.random_element(elements=('Present', 'Absent',
-                                                   'Late'))
-            late_arrival = fake.boolean(
-                chance_of_getting_true=30) if status == 'Late' else None
+                else:
+                    morning_attendance = None
 
-            # Role-specific logic
-            if role == 'Teacher':
-                attendance_entry = model(term=term,
-                                         morning_attendance=morning_attendance,
-                                         evening_attendance=evening_attendance,
-                                         comment=comment,
-                                         status=status,
-                                         late_arrival=late_arrival,
-                                         teacher_username=person.username)
-            else:
-                attendance_entry = model(term=term,
-                                         morning_attendance=morning_attendance,
-                                         evening_attendance=evening_attendance,
-                                         comment=comment,
-                                         status=status,
-                                         late_arrival=late_arrival,
-                                         student_username=person.username,
-                                         class_id=person.class_id)
+                evening_attendance = morning_attendance + timedelta(
+                    hours=7) if morning_attendance else None
 
-            attendance_list.append(attendance_entry)
+                comment = fake.text()
+                status = fake.random_element(elements=('Present', 'Absent',
+                                                       'Late'))
+                late_arrival = fake.boolean(
+                    chance_of_getting_true=30) if status == 'Late' else None
+
+                if morning_attendance:
+                    if role == 'Teacher':
+                        attendance_entry = model(
+                            term=term,
+                            morning_attendance=morning_attendance,
+                            evening_attendance=evening_attendance,
+                            comment=comment,
+                            status=status,
+                            late_arrival=late_arrival,
+                            teacher_username=person.username)
+                    else:
+                        attendance_entry = model(
+                            term=term,
+                            morning_attendance=morning_attendance,
+                            evening_attendance=evening_attendance,
+                            comment=comment,
+                            status=status,
+                            late_arrival=late_arrival,
+                            student_username=person.username,
+                            class_id=person.class_id)
+
+                    attendance_list.append(attendance_entry)
     return attendance_list
 
 

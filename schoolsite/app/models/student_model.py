@@ -53,8 +53,7 @@ class Student(db.Model, UserMixin):
     parental_consent = db.Column(db.Boolean, default=True)  # Parental Consent
     notes = db.Column(db.Text, nullable=True)  # Notes
     languages_spoken = db.Column(db.String(100), nullable=True)
-    image_link = db.Column(db.String(100),
-                           default='schoolsite/app/default.png')
+    image_link = db.Column(db.String(100), default='default.png')
     access = db.Column(db.Boolean, default=False)
 
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=True)
@@ -80,7 +79,7 @@ class StudentAttendance(db.Model):
     morning_attendance = db.Column(db.DateTime, default=None)
     evening_attendance = db.Column(db.DateTime, default=None)
     comment = db.Column(db.String(1000), nullable=True)
-    status = db.Column(db.String(50), nullable=True)
+    status = db.Column(db.String(50), default="absent")
     late_arrival = db.Column(db.Boolean, nullable=True)
 
     student_username = db.Column(db.String(200),

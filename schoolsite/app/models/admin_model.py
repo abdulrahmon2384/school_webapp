@@ -14,7 +14,7 @@ class Admin(db.Model, UserMixin):
     key = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), default="Admin")
     image_link = db.Column(db.String(100),
-                           default='schoolsite/app/default.png')
+                           default='default.png')
 
     def __repr__(self):
         return f"{self.lastname} {self.firstname}"
