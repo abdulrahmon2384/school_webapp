@@ -1,12 +1,11 @@
-from typing import Iterable
 from schoolsite.app.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement, Results
 from flask_login import login_user, current_user
 from flask import render_template, flash, request, url_for, redirect, jsonify
 from datetime import datetime
-import math
-from collections import Counter
+import math, itertools, collections, sqlalchemy, typing
 
-grades = {'A+': 90, 'A': 85, 'A-': 80, 'B+': 75, 'B': 70}
+
+grades = {'A+': 90, 'A': 80, 'B': 70, 'C': 60, 'D': 50, 'F': 40}
 
 
 def fetch_latest_events(n: int) -> list:
@@ -22,6 +21,8 @@ def fetch_latest_announcements(n: int) -> list:
 
 
 def calculate_percentage(total_marks: int, marks_obtained: int) -> float:
+    if total_marks == 0:
+        return 0
     return (total_marks / marks_obtained) * 100
 
 
@@ -29,10 +30,11 @@ def fetch_grade(result, grades: dict = grades) -> str:
     marks_obtained = result.marks_obtain
     total_marks = result.total_mark
     percentage = calculate_percentage(total_marks, marks_obtained)
-
-    for grade, number in grades.items():
-        if percentage >= number and percentage < number + 10:
+    for grade, lower_bound in grades.items():
+        upper_bound = lower_bound + 10
+        if lower_bound <= percentage < upper_bound:
             return grade
+    return 'F'
 
 
 def convert_date_string(date_string):
@@ -49,7 +51,7 @@ def to_percentage(result) -> int:
     return int(percentage)
 
 
-def attendance_to_dict(student_attendances: Iterable) -> list:
+def attendance_to_dict(student_attendances: typing.Iterable) -> list:
     to_dict = [{
         "morning_attendance":
         convert_date_string(student_attendance.morning_attendance),
@@ -95,7 +97,7 @@ def fetch_student_result(student_username: str) -> list:
     return to_list
 
 
-def columns(dicts: Iterable, columns: Iterable) -> dict:
+def columns(dicts: typing.Iterable, columns: typing.Iterable) -> dict:
     result_columns = {}
     for column in columns:
         values = {row[column] for row in dicts}
@@ -145,23 +147,59 @@ def fetch_historical_or_current_attendance(username, term, role):
     return attendance
 
 
-def convert_class_records_to_dict(records: Iterable) -> dict:
+def convert_class_records_to_dict(records: typing.Iterable) -> dict:
+    records_dict = {}
     students = Student.query.filter(Student.class_id == records.id).all()
-    gender = Counter([student.gender for student in students])
-    records_dict = {
-        "num_of_students": sum(gender.values()),
-        "num_of_male": gender['Male'],
-        "num_of_female": gender['Female'],
-        "name": records.class_name,
-        "subjects": records.class_subjects,
-        "books": records.class_books,
-        "timetable": records.class_time_table,
-    }
+    if students:
+        gender = collections.Counter([student.gender for student in students])
+        records_dict = {
+	        "num_of_students": sum(gender.values()),
+	        "num_of_male": gender['Male'],
+	        "num_of_female": gender['Female'],
+	        "name": records.class_name,
+	        "subjects": records.class_subjects,
+	        "books": records.class_books,
+	        "timetable": records.class_time_table,
+	    }
+        return records_dict
     return records_dict
 
 
-def fetch_class_details(classid: str) -> dict:
+def fetch_class_details(classid: str) -> tuple:
     class_records = Class.query.filter_by(id=classid).all()[0]
     class_details_dict = convert_class_records_to_dict(class_records)
     teacher_about = class_records.teacher.about()
     return class_details_dict, teacher_about
+
+
+def fetch_attendance_options(username: str, user_role: str) -> list:
+    if user_role == 'Teacher':
+        attendance_records = TeacherAttendance.query.with_entities(
+            TeacherAttendance.term,
+			sqlalchemy.func.extract('month',
+                         TeacherAttendance.morning_attendance)).filter(
+                             TeacherAttendance.teacher_username ==
+                             username).distinct().all()
+    else:
+        attendance_records = StudentAttendance.query.with_entities(
+            StudentAttendance.term,
+			sqlalchemy.func.extract('month',
+                         StudentAttendance.morning_attendance)).filter(
+                             StudentAttendance.student_username ==
+                             username).distinct().all()
+    #dont worry about this it only conver the resul to key: value pair {key:[values , values]}
+    attendance_to_dict = mapped_data = {term: [value for _, value in group] for term, group in itertools.groupby(attendance_records, key=lambda x: x[0])}
+    return attendance_to_dict
+
+
+def fetch_user_attendance_options(username: str) -> list:
+    if username:
+        user = Teacher.query.filter_by(username=username).first()
+        if not user:
+            user = Student.query.filter_by(username=username).first()
+
+        if user:
+            attendance_option = fetch_attendance_options(
+                user.username, user.role)
+            return attendance_option
+    return attendance_option
