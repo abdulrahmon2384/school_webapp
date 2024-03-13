@@ -17,7 +17,7 @@ months = [
 ]
 
 
-@student_bp.route('/guardian/dashboard', methods=['GET'])
+@student_bp.route('/?guardian=dashboard', methods=['GET'])
 @login_required
 def dashboard():
 	student_results = fetch_student_result(current_user.username)
