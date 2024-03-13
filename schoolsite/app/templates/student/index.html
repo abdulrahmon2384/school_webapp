@@ -3,39 +3,56 @@
 
 {% block style %}
 	<style>
-		.filter {
-		  margin-top: 20px;
-		}
+	.filter {
+	  margin-top: 20px;
+	}
 
-		.filterSelect {
-		  padding: 5px;
-		}
-		.calendar {
-		  display: grid;
-		  grid-template-columns: repeat(7, 1fr);
-		  gap: 5px;
-		}
+	.filterSelect {
+	  padding: 5px;
+	}
 
-		.day {
-		  width: 30px;
-		  height: 30px;
-		  border-radius: 50%;
-		  text-align: center;
-		  line-height: 30px;
-		}
+	.calendar {
+	  display: grid;
+	  grid-template-columns: repeat(7, 1fr);
+	  gap: 5px;
+	  width: 90%; /* Adjust as needed */
+	  max-width: 600px; /* Adjust maximum width */
+	  margin: 0 auto; /* Center horizontally */
+	  border-radius: 10px; /* Curvature */
+	  background-color: #f5f5f5; /* Background color */
+	}
 
-		.present {
-		  background-color: green;
-		}
+	.day {
+	  width: 100%; /* Occupy full width of grid cell */
+	  padding-top: 100%; /* Maintain aspect ratio for square shape */
+	  border-radius: 50%;
+	  text-align: center;
+	  line-height: 1; /* Reset line height */
+	  font-size: 1rem; /* Adjust font size */
+	  background-color: #fff; /* Initial background color */
+	  transition: background-color 0.3s ease; /* Smooth transition for background color */
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
 
-		.absent {
-		  background-color: red;
-		}
+	/* Hover effect */
+	.day:hover {
+	  background-color: #e0e0e0; /* Adjust to desired color */
+	}
 
-		.tardy {
-		  background-color: yellow;
-		}
+	/* Press effect */
+	.day:active {
+	  transform: scale(0.95); /* Slight scale down on press */
+	}
 
+	.present {
+	  background-color: #4CAF50; /* Green color for present */
+	}
+
+	.absent {
+	  background-color: #FF5733; /* Red color for absent */
+	}
 	</style>
 {% endblock %}
 
@@ -185,9 +202,10 @@
       <div class="p-6">
 
         <!-- dashboard start -->
+	
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md lg:col-span-2">
-                    <div class="flex justify-between mb-4 items-start">
+					<div class="flex justify-between mb-4 items-start">
                         <div class="font-medium">Upcoming Events</div>
                     </div>
 					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -342,9 +360,12 @@
 				   <div class="details">
 					  <div class="detail-row">
 						  <div class="detail">
-							  <p>Total Students: {{ class_details.get("num_of_students") }}</p>
-							  <p>Male: {{ class_details.get("num_of_male") }}</p>
-							  <p>Female: {{ class_details.get("num_of_female") }}</p>
+							 <div id="user-data" data-username="{{ current_user.username }}">
+								 <p>Current student Name : {{ current_user }}</p>
+								  <p>Total Students: {{ class_details.get("num_of_students") }}</p>
+								  <p>Male: {{ class_details.get("num_of_male") }}</p>
+								  <p>Female: {{ class_details.get("num_of_female") }}</p>
+							 </div>
 						  </div>
 					  </div>
 					  <div class="detail-row">
@@ -448,9 +469,6 @@
 					  {% endfor %}
 				  </select>
 				</div>
-				<div>
-					<button id="Attendance-filter"  >Filter</button>
-				</div>
 			</div>
 			<div class="calendar" id="calendar"></div>
 		</div>
@@ -458,7 +476,7 @@
 {% endblock %}
 {% block script %}
 		  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-		  <script src="{{ url_for('static', filename='js/student.js') }}"></script>
+		  <script src="{{ url_for('static', filename='js/student/student.js') }}"></script>
 {% endblock %}
 
 

@@ -7,7 +7,25 @@ from schoolsite.app.functions import *
 teacher_bp = Blueprint('teacher', __name__)
 
 
-@teacher_bp.route('/teacher')
+@teacher_bp.route('/teachers/dashboard', methods=['GET'])
 @login_required
-def teacher():
-    return render_template("teacher/index.html")
+def dashboard():
+	return render_template("teacher/index.html")
+
+
+@teacher_bp.route('/teachers/attendance', methods=['GET'])
+@login_required
+def attendance():
+	return render_template("teacher/attendance.html")
+
+
+@teacher_bp.route('/teachers/performance', methods=['GET'])
+@login_required
+def performance():
+	return render_template("teacher/performance.html")
+
+
+@teacher_bp.route('/teachers/update', methods=['GET'])
+@login_required
+def update():
+	return render_template("teacher/update.html")

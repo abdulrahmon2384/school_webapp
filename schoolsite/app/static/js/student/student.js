@@ -153,7 +153,8 @@ document.getElementById('donutChartButton').addEventListener('click', function()
 
 
 function generateFilename(results, fileExtension) {
-  const filename = `student_${results[0].year}_${results[0].term}_${results[0].result_type}.${fileExtension}`;
+  const user = document.getElementById('user-data').getAttribute('data-username');
+  const filename = `${user}_${results[0].year}_${results[0].term}_${results[0].result_type}.${fileExtension}`;
   return filename;
 }
 
@@ -170,6 +171,7 @@ function convertToExcel(results) {
 
 function downloadData(fileType) {
   fetchData(results => {
+	  
 	let data;
 	let filename;
 	switch (fileType) {
@@ -222,11 +224,6 @@ function updateAttendanceData() {
 	generateCalendar();
 }
 
-// Event listener for the "Attendance-filter" button
-const attendanceFilter = document.getElementById("Attendance-filter");
-attendanceFilter.addEventListener("click", () => {
-	updateAttendanceData();
-});
 
 // Event listener for the year dropdown menu
 const yearSelect = document.getElementById("year-select");
@@ -244,7 +241,8 @@ monthSelect.addEventListener("change", () => {
 function fetchAttendanceData(dataProcessed) {
 	const year = yearSelect.value;
 	const month = monthSelect.value;
-	const apiUrl = `/api/attendance?year=${year}&username=acarter&month=${month}`;
+	const user = document.getElementById('user-data').getAttribute('data-username');
+	const apiUrl = `/api/attendance?year=${year}&username=${user}&month=${month}`;
 
 	fetch(apiUrl)
 		.then(response => response.json())
