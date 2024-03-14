@@ -17,7 +17,7 @@ months = [
 ]
 
 
-@student_bp.route('/?guardian=dashboard', methods=['GET'])
+@student_bp.route('/student/dashboard', methods=['GET'])
 @login_required
 def dashboard():
 	student_results = fetch_student_result(current_user.username)
@@ -37,25 +37,25 @@ def dashboard():
 	                       months=calendar.month_name)
 
 
-@student_bp.route('/guardian/attendance', methods=['GET'])
+@student_bp.route('/student/attendance', methods=['GET'])
 @login_required
 def attendance():
 	return render_template("student/attendance.html")
 
 
-@student_bp.route('/guardian/class', methods=['GET'])
+@student_bp.route('/student/class', methods=['GET'])
 @login_required
 def class_():
 	return render_template("student/class.html")
 
 
-@student_bp.route('/guardian/performance', methods=['GET'])
+@student_bp.route('/student/performance', methods=['GET'])
 @login_required
 def performance():
 	return render_template("student/performance.html")
 
 
-@student_bp.route('/guardian/fee', methods=['GET'])
+@student_bp.route('/student/fee', methods=['GET'])
 @login_required
 def fee():
 	return render_template("student/fees.html")
