@@ -13,6 +13,138 @@
 {% endblock %}
 
 
-{% block block %}
+{% block content %}
+	<!-- Student Class Details -->               
 
+	<div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md">
+		<div class="flex justify-between mb-4 items-start">
+			<div class="font-medium">Class Details</div>
+		</div>
+		<div class="overflow-x-auto">
+			<div class="container">
+			   <div class="details">
+				  <div class="detail-row">
+					<div>
+						<span>Class Information</span>
+					</div>
+					<div id="user-data" data-username="{{ current_user.username }}">
+						<p>Class : {{ current_user.class_.class_name }}</p>
+					    <p>Total Students: {{ class_details.get("num_of_students") }}</p>
+					    <p>Number of Male: {{ class_details.get("num_of_male") }}</p>
+						<p>Number of Female: {{ class_details.get("num_of_female") }}</p>
+					<div>
+						<div>
+							<span>Top Female Student</span>
+							<p>Score Percentage: </p>
+						</div>
+					    <div>
+						    <span>Top Male Student</span>
+						    <p>Score Percentage: </p>
+						</div>
+				   </div>
+				  <div class="detail-row">
+					 <div>
+					    <div>
+							<span>Teacher Details</span>
+					    </div>
+						<div>
+							{% if teacher.get('image') == 'default.png' %} 
+								<img src="{{ url_for('static', filename='default.png') }}" alt="Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+							{% else %}
+								<img src="{{ teacher.get('image') }}" alt="Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+							{% endif %}
+						</div>
+						<div class="detail">
+							<div>Class Teacher</div>
+							<div>
+								<p><span>Name:&nbsp;</span>&nbsp;{{ teacher.get('marital_status') }}. {{ teacher.get('name') }}</p><br>
+								<span>Contact&nbsp;</span>
+							</div>
+							<ul>
+								<li><span>Email:&nbsp;</span>&nbsp;{{ teacher.get('contact').get('email') }}</li>
+								<li><span>Phonenumber:&nbsp;</span>&nbsp;{{ teacher.get('contact').get('phonenumber') }}</li>
+								<li><span>About:&nbsp;</span>&nbsp;{{ teacher.get('bio') }}</li>
+							</ul>
+						</div>
+					 </div>
+				  </div>
+				  <div>
+					  <div>
+						 <div>
+							<span>Student Performance</span>
+					     </div>
+						 <div>
+							 <div>Name : {{ current_user.__str__() }}
+							<p>Subject: {{ class_details.get("subject") }}</p>
+							<p>Term: {{ class_details.get("term") }}</p>
+							<p>Year: {{ class_details.get("year") }}</p>
+							<p>Result Type: {{ class_details.get("result_type") }}</p>
+						 </div> 
+					  </div>
+				  </div>
+				  <div class="detail-row">
+					  <div>
+						  <span>Class Subjects & Text Books</span>
+					  </div>
+					  <div>
+						  <ul>
+							  {% for subject in class_details.get("subjects") %}
+							      <li>{{ subject }}</li>
+							  {% endfor %}
+						  </ul>
+					  </div>
+					   <table>
+						 <thead>
+							<tr>
+							   <th>Textbook</th>
+							   <th>Author</th>
+							   <th>Amount</th>
+							</tr>
+						 </thead>
+						 <tbody>
+							 {% for  _ in class_details.get("books") %}
+								 <tr>
+									<td>{{ class_details.get("books")["books"][ loop.index-1] }} </td>
+									<td>{{ class_details.get("books")["authors"][ loop.index-1] }}</td>
+									<td>{{ class_details.get("books")["amounts"][ loop.index-1] }}</td>
+								 </tr>
+							 {% endfor %}
+						 </tbody>
+					   </table>
+				  </div>
+				  <div class="detail-row">
+					  <div class="detail">
+						  <h2>Class Timetable</h2>
+					  </div>
+					  <div>
+						  <table>
+							<thead>
+							   <tr>
+								  <th>Day</th>
+								  {% for _ in range(table_row) %}
+									 <th>{{ class_details.get("timetable")['Times'][loop.index-1] }}</th>
+								  {% endfor %}
+							   </tr>
+							</thead>
+							<tbody>
+								{% for key in class_details.get("timetable").keys() %}
+									{% if key != 'Times' %}
+										<tr>
+										   <td>{{ key }}</t>
+										   {% for _ in range(table_row) %}
+											   <td>{{ class_details.get("timetable")[key][loop.index-1] }}</td>
+										   {% endfor %}
+										</tr>
+									{% endif %}
+								{% endfor %}
+							</tbody>
+						  </table>
+					  </div>
+				  </div>
+
+			   </div>
+			</div>
+		</div>
+	</div>
+   <!-- Student Class Details end -->
 {% endblock %}

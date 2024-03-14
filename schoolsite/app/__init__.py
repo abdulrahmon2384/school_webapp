@@ -26,15 +26,15 @@ from schoolsite.app.models.admin_model import Admin
 
 @login_manager.user_loader
 def load_user(user_id):
-    user_models = [Admin, Teacher, Student]
-    for model in user_models:
-        user = model.query.get(user_id)
-        if user:
-            return user
-    return None
+	user_models = [Admin, Teacher, Student]
+	for model in user_models:
+		user = model.query.get(user_id)
+		if user:
+			return user
+	return None
 
 
 with app.app_context():
-    db.create_all()
+	db.create_all()
 
 #import schoolsite.app.generate_fake_data

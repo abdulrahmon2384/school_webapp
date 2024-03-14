@@ -24,17 +24,15 @@ def dashboard():
 	result = columns(student_results, ['year', 'term', 'result_type'])
 	events = fetch_latest_events(number_of_event)
 	announcements = fetch_latest_announcements(number_of_annoucement)
-	class_details, teacher = fetch_class_details(current_user.class_id)
+	res = get_total_marks(class_id=current_user.class_id, term='first term')
 	return render_template("student/index.html",
 	                       events=events,
 	                       announcements=announcements,
 	                       current_user=current_user,
 	                       school_name=school_name,
 	                       results=result,
-	                       class_details=class_details,
-	                       teacher=teacher,
-	                       table_row=table_row,
-	                       months=calendar.month_name)
+	                       months=calendar.month_name,
+	                       res=res)
 
 
 @student_bp.route('/student/attendance', methods=['GET'])
@@ -46,7 +44,11 @@ def attendance():
 @student_bp.route('/student/class', methods=['GET'])
 @login_required
 def class_():
-	return render_template("student/class.html")
+	class_details, teacher = fetch_class_details(current_user.class_id)
+	return render_template("student/class.html",
+	                       class_details=class_details,
+	                       teacher=teacher,
+	                       table_row=table_row)
 
 
 @student_bp.route('/student/performance', methods=['GET'])
