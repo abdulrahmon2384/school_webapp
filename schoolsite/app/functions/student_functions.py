@@ -184,7 +184,7 @@ def convert_class_records_to_dict(records: typing.Iterable) -> dict:
 
 
 def fetch_class_details(classid: str) -> tuple:
-	class_records = Class.query.filter_by(id=classid).all()[0]
+	class_records = Class.query.filter_by(id=classid).first()
 	class_details_dict = convert_class_records_to_dict(class_records)
 	teacher_about = class_records.teacher.about()
 	return class_details_dict, teacher_about
@@ -209,7 +209,7 @@ def get_top_students(data):
 			    (fullname, gender, round(percentage, 1)))
 
 		if len(grouped_data) == 1:
-			result[grouped_data.keys()[0]] = max(grouped_data)
+			result = grouped_data
 			return result
 
 		result['Male'] = max(grouped_data['Male'])

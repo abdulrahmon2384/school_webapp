@@ -12,7 +12,127 @@
 {% include "student/navbar.html" %}
 {% endblock %}
 
+{% block style %}
+   <style>
+   .calendar {
+	 display: grid;
+	 grid-template-columns: repeat(7, 1fr);
+	 gap: 5px;
+	 width: 90%; /* Adjust as needed */
+	 max-width: 600px; /* Adjust maximum width */
+	 margin: 0 auto; /* Center horizontally */
+	 border-radius: 10px; /* Curvature */
+	 background-color: #f5f5f5; /* Background color */
+   }
 
-{% block block %}
+   .day {
+	 width: 100%; /* Occupy full width of grid cell */
+	 padding-top: 100%; /* Maintain aspect ratio for square shape */
+	 border-radius: 50%;
+	 text-align: center;
+	 line-height: 1; /* Reset line height */
+	 font-size: 1rem; /* Adjust font size */
+	 background-color: #fff; /* Initial background color */
+	 transition: background-color 0.3s ease; /* Smooth transition for background color */
+	 display: flex;
+	 align-items: center;
+	 justify-content: center;
+   }
 
+   /* Hover effect */
+   .day:hover {
+	 background-color: #e0e0e0; /* Adjust to desired color */
+   }
+
+   /* Press effect */
+   .day:active {
+	 transform: scale(0.95); /* Slight scale down on press */
+   }
+
+   .present {
+	 background-color: #4CAF50; /* Green color for present */
+   }
+
+   .absent {
+	 background-color: #FF5733; /* Red color for absent */
+   }
+   </style>
+{% endblock %}
+
+{% block content %}
+	<!-- Page Content -->
+	<div class="container" id="user-data" data-username="{{ current_user.username }}">
+		
+		<h3>Attendance Tracking</h3>
+		<p>View and manage attendance records for students.</p>
+
+		<!-- Calendar View -->
+		<div >
+			<div>
+				<div>
+					<select id="year-select" class="filterSelect">
+						{% if results.get('year') %}
+							{% for year in results.get('year') %}
+								<option value="{{ year }}">{{ year }}</option>
+							{% endfor %}
+						{% endif %}
+					</select>
+				</div>
+				<div>
+				  <select id="month-select" class="filterSelect">
+					  {% for month in months[1:] %}
+						  <option value="{{ loop.index }}">{{ month }}</option>
+					  {% endfor %}
+				  </select>
+				</div>
+			</div>
+			<div class="calendar" id="calendar"></div>
+		</div>
+
+		<!-- Summary Statistics -->
+		<div class="summary">
+			<h2>Summary Statistics</h2>
+			<p>Total Days Present: <span id="days-present">25</span></p>
+			<p>Total Days Absent: <span id="days-absent">5</span></p>
+			<p>Total Days Late: <span id="days-late">3</span></p>
+			<!-- Add percentage breakdown if needed -->
+		</div>
+
+		<!-- Detailed Attendance List -->
+		<div class="attendance-list">
+			<h2>Attendance Records</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Status</th>
+						<th>Remarks</th>
+						<!-- Add more columns if needed -->
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Attendance records dynamically populated here -->
+					<!-- Example: <tr><td>2024-03-14</td><td>Present</td><td></td></tr> -->
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Filtering Options -->
+		<div class="filters">
+			<h2>Filter Options</h2>
+			<!-- Add filtering controls here, such as date range selector, status filter, etc. -->
+			<!-- Example: <input type="date" id="start-date"><input type="date" id="end-date"> -->
+		</div>
+
+		<!-- Actions and Interactions -->
+		<div class="actions">
+			<h2>Actions</h2>
+			<!-- Add actions for marking attendance, requesting corrections, etc. -->
+			<!-- Example: <button id="mark-attendance">Mark Attendance</button> -->
+		</div>
+	</div>
+{% endblock %}
+
+{% block script %}
+		  <script src="{{ url_for('static', filename='js/student/attendance.js') }}"></script>
 {% endblock %}

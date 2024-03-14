@@ -32,14 +32,24 @@
 					    <p>Total Students: {{ class_details.get("num_of_students") }}</p>
 					    <p>Number of Male: {{ class_details.get("num_of_male") }}</p>
 						<p>Number of Female: {{ class_details.get("num_of_female") }}</p>
+					</div>
 					<div>
+						<dvi>{{ Term }}</dvi>
 						<div>
-							<span>Top Female Student</span>
-							<p>Score Percentage: </p>
+							<div>Top Female Student</div>
+							<div>
+                               <p>Student Name :<span>{{ top_student["Female"][0] }}</span></p>
+								<p>Gender: {{ top_student["Female"][1] }} </p>
+								<p>Total score: {{ top_student["Female"][2] }}</p>
+							</div>
 						</div>
-					    <div>
-						    <span>Top Male Student</span>
-						    <p>Score Percentage: </p>
+						<div>
+							<div>Top Male Student</div>
+							<div>
+							   <p>Student Name :<span>{{ top_student["Male"][0] }}</span></p>
+								<p>Gender: {{ top_student["Male"][1] }} </p>
+								<p>Total score: {{ top_student["Male"][2] }}</p>
+							</div>
 						</div>
 				   </div>
 				  <div class="detail-row">
@@ -74,11 +84,12 @@
 							<span>Student Performance</span>
 					     </div>
 						 <div>
-							 <div>Name : {{ current_user.__str__() }}
-							<p>Subject: {{ class_details.get("subject") }}</p>
-							<p>Term: {{ class_details.get("term") }}</p>
-							<p>Year: {{ class_details.get("year") }}</p>
-							<p>Result Type: {{ class_details.get("result_type") }}</p>
+							 <div>Top Male Student</div>
+							 <div>
+								<p>Name :<span>{{ current_user.__str__() }}</span></p>
+								 <p>Gender: {{ current_user.gender }} </p>
+								 <p>Total score: {{ user_scores.get(current_user.gender)[0][-1] }}</p>
+							 </div>
 						 </div> 
 					  </div>
 				  </div>
@@ -88,7 +99,7 @@
 					  </div>
 					  <div>
 						  <ul>
-							  {% for subject in class_details.get("subjects") %}
+							  {% for subject in class_details.get("subjects")['subjects'] %}
 							      <li>{{ subject }}</li>
 							  {% endfor %}
 						  </ul>

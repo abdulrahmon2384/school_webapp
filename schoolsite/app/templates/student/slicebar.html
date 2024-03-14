@@ -10,50 +10,50 @@
 		<span class="text-lg font-bold text-white ml-3">{{ current_user }}</span>
 	</a>
 	<ul class="mt-4">
-		<li class="mb-1 group active">
+		<li class="mb-1 group {{ 'active' if page == 'Dashboard' else '' }}">
 			<a href="/student/dashboard" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class="ri-dashboard-line mr-3 text-lg"></i>
 				<span class="text-sm">Dashboard</span>
 			</a>
 		</li>
-		<li class="mb-1 group ">
+		<li class="mb-1 group {{ 'active' if page == 'Class Detail' else '' }}">
 			<a href="/student/class" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class="ri-book-line mr-3 text-lg"></i> <!-- Icon for Class -->
 				<span class="text-sm">Class Detail</span>
 			</a>
 		</li>
-		<li class="mb-1 group ">
+		<li class="mb-1 group {{ 'active' if page == 'Performance' else '' }}">
 			<a href="/student/performance" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class="ri-bar-chart-line mr-3 text-lg"></i>
 				<span class="text-sm">Performance</span>
 			</a>
 		</li>
-		<li class="mb-1 group">
+		<li class="mb-1 group {{ 'active' if page == 'School Fee' else '' }}">
 			<a href="/student/fee" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class="ri-money-dollar-circle-line mr-3 text-lg"></i>
 				<span class="text-sm">School Fee</span>
 			</a>
 		</li>
-		<li class="mb-1 group">
+		<li class="mb-1 group {{ 'active' if page == 'Attendance Tracking' else '' }}">
 			<a href="/student/attendance" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class="ri-calendar-check-line mr-3 text-lg"></i>
 				<span class="text-sm">Attendance Tracking</span>
 			</a>
 		</li>
-		<li class="mb-1 group">
+		<li class="mb-1 group {{ 'active' if page == 'Communication' else '' }}">
 			<a href=”/communication” class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class=”ri-mail-line mr-3 text-lg”></i>
 				<i class="ri-chat-3-line mr-3 text-lg"></i>
 				<span class="text-sm">Communication</span>
 			</a>
 		</li>
-		<li class="mb-1 group ">
+		<li class="mb-1 group {{ 'active' if page == 'Help' else '' }}">
 			<a href="/help" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class="ri-questionnaire-line mr-3 text-lg"></i>
 				<span class="text-sm">Help & About</span>
 			</a>
 		</li>
-		<li class="mb-1 group ">
+		<li class="mb-1 group {{ 'active' if page == 'About' else '' }}">
 			<a href="/about" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 				<i class="ri-information-line mr-3 text-lg"></i>
 				<span class="text-sm">About</span>
@@ -64,3 +64,4 @@
 </div>
 <div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay"></div>
 <!-- end: Sidebar -->
+

@@ -372,6 +372,20 @@ def generate_fake_attendance(model, persons, terms, role='Student'):
 
 
 with app.app_context():
+	students = Student.query.all()
+	term = {
+	    'first term': [datetime(2024, 1, 1),
+	                   datetime(2024, 3, 31)],
+	    'second term': [datetime(2024, 4, 1),
+	                    datetime(2024, 7, 31)],
+	    'third term': [datetime(2024, 8, 1),
+	                   datetime(2024, 11, 30)],
+	}
+	students_attendance = generate_fake_attendance(StudentAttendance, students,
+	                                               term)
+	db.session.add_all(students_attendance)
+	db.session.commit()
+""""
 	db.create_all()
 	admins = generate_fake_admins(2)
 	db.session.add_all(admins)
@@ -434,17 +448,4 @@ with app.app_context():
 	db.session.add_all(annoucements)
 	db.session.commit()
 	print("Done.......")
-"""	students = Student.query.all()
-	term = {
-		'first term': [datetime(2024, 1, 1),
-					   datetime(2024, 3, 31)],
-		'second term': [datetime(2024, 4, 1),
-						datetime(2024, 7, 31)],
-		'third term': [datetime(2024, 8, 1),
-					   datetime(2024, 11, 30)],
-	}
-	students_attendance = generate_fake_attendance(StudentAttendance, students,
-												   term)
-	db.session.add_all(students_attendance)
-	db.session.commit()
 """
