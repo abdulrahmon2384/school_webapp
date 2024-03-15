@@ -41,9 +41,11 @@ def attendance():
 	page = 'Attendance Tracking'
 	student_results = fetch_student_result(current_user.username)
 	results = columns(student_results, ['year', 'term', 'result_type'])
+	user_scores = get_total_marks(student_username=current_user.username)
 	return render_template("student/attendance.html",
 	                       results=results,
-	                       months=calendar.month_name)
+	                       months=calendar.month_name,
+	                       user_scores=user_scores)
 
 
 @student_bp.route('/student/class', methods=['GET'])

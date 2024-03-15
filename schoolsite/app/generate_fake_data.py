@@ -342,7 +342,7 @@ def generate_fake_attendance(model, persons, terms, role='Student'):
 				comment = fake.text()
 				status = fake.random_element(elements=('present', 'absent',
 				                                       'present', 'present',
-				                                       'present'))
+				                                       'late'))
 				late_arrival = fake.boolean(
 				    chance_of_getting_true=30) if status == 'Late' else None
 

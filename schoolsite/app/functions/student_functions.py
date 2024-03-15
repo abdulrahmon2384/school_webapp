@@ -2,7 +2,7 @@ from schoolsite.app.models import Announcement, Teacher, Student, Class, Admin, 
 from flask_login import login_user, current_user
 from flask import render_template, flash, request, url_for, redirect, jsonify
 from datetime import datetime
-import math, itertools, collections, sqlalchemy, typing
+import math, itertools, collections, sqlalchemy, typing, pytz
 from sqlalchemy import func, case
 from schoolsite.app import db
 from collections import defaultdict
@@ -53,16 +53,29 @@ def to_percentage(result) -> int:
 	return int(percentage)
 
 
+def convert_to_ngn_time(date_str):
+	date_str = date_str.strftime('%a, %d %b %Y %H:%M:%S GMT')
+	nigerian_timezone = pytz.timezone('Africa/Lagos')
+
+	date_object = datetime.strptime(date_str, '%a, %d %b %Y %H:%M:%S %Z')
+	nigerian_time = date_object.astimezone(nigerian_timezone)
+
+	formatted_time = nigerian_time.strftime('%I:%M %p')
+	return formatted_time
+
+
 def attendance_to_dict(student_attendances: typing.Iterable) -> list:
 	to_dict = [{
 	    "morning_attendance":
-	    convert_date_string(student_attendance.morning_attendance),
+	    convert_to_ngn_time(student_attendance.morning_attendance),
 	    "evening_attendance":
-	    convert_date_string(student_attendance.evening_attendance),
+	    convert_to_ngn_time(student_attendance.evening_attendance),
 	    "comment":
 	    student_attendance.comment,
 	    "status":
 	    student_attendance.status,
+	    "date":
+	    convert_date_string(student_attendance.morning_attendance),
 	    "late_arrival":
 	    True if student_attendance.late_arrival else False
 	} for student_attendance in student_attendances]
@@ -202,11 +215,11 @@ def get_top_students(data):
 	grouped_data = defaultdict(list)
 	result = {}
 	if data:
-		for username, score, count, gender in data:
+		for username, score, count, gender, image_link in data:
 			percentage = calculate_percentage(score, count * 100)
 			fullname = get_student_fullname(username)
 			grouped_data[gender].append(
-			    (fullname, gender, round(percentage, 1)))
+			    (fullname, gender, round(percentage, 1), image_link))
 
 		if len(grouped_data) == 1:
 			result = grouped_data
@@ -236,7 +249,8 @@ def get_total_marks(class_id=None,
 
 	query = db.session.query(
 	    Results.student_username, func.sum(Results.total_mark),
-	    func.count(Results.total_mark), Student.gender).join(
+	    func.count(Results.total_mark),
+	    Student.gender, Student.image_link).join(
 	        Student, Results.student_username == Student.username).filter(
 	            *filters).group_by(
 	                Results.student_username, Student.gender).order_by(

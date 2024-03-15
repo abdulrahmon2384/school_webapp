@@ -1,4 +1,8 @@
-let attendanceData = {}
+let tableAttendanceData = [];
+let attendanceData = {};
+let presentCount = 0;
+let	absentCount = 0;
+let lateCount = 0;
 
 
 // Function to update attendance data based on selected year and month
@@ -12,12 +16,16 @@ function updateAttendanceData() {
 const yearSelect = document.getElementById("year-select");
 yearSelect.addEventListener("change", () => {
 	updateAttendanceData();
+	updateAttendanceCounts();
+	renderAttendanceTable(tableAttendanceData);
 });
 
 // Event listener for the month dropdown menu
 const monthSelect = document.getElementById("month-select");
 monthSelect.addEventListener("change", () => {
 	updateAttendanceData();
+	 updateAttendanceCounts();
+	renderAttendanceTable(tableAttendanceData);
 });
 
 // Function to fetch attendance data from the server
@@ -32,17 +40,37 @@ function fetchAttendanceData(dataProcessed) {
 		.then(data => {
 			dataProcessed(data.attendance);
 			generateCalendar();
+			updateAttendanceCounts();
+			renderAttendanceTable(tableAttendanceData);
 		})
 		.catch(error => console.error('Error fetching data:', error));
 }
 
 // Function to extract morning_attendance and status
 function extractAttendanceStatus(apiData) {
+	tableAttendanceData = [];
 	attendanceData = {};
+	presentCount = 0;
+	absentCount = 0;
+	lateCount = 0;
 	apiData.forEach(item => {
-		const date = item.morning_attendance;
+		const morning = item.morning_attendance;
+		const evening = item.evening_attendance;
 		const status = item.status;
+		const comment = item.comment;
+		const late = item.late_arrival;
+		const date = item.date;
 		attendanceData[date] = status;
+		tableAttendanceData.push([date, morning, status, evening, late, comment]);
+
+		if (status === 'present') {
+			presentCount++;
+		} else if (status === 'absent') {
+			absentCount++;
+		}else if (status === 'late'){
+			lateCount++;
+			presentCount++;
+		}
 	});
 }
 
@@ -94,9 +122,126 @@ for (let i = 1; i <= daysInMonth; i++) {
 
 
 
+//Function return number of present, absent and late students
+function updateAttendanceCounts() {
+	const presentCountElement = document.getElementById('presentCountElement');
+	const absentCountElement = document.getElementById('absentCountElement');
+	const lateCountElement = document.getElementById('lateCountElement');
+
+	presentCountElement.innerText = presentCount;
+	absentCountElement.innerText = absentCount;
+	lateCountElement.innerText = lateCount;
+}
+//end of attendance count
+
+
+function renderAttendanceTable(tableAttendanceData) {
+	const tableBody = document.getElementById('attendanceTableBody');
+
+
+	tableBody.innerHTML = '';
+	tableAttendanceData.forEach(item => {
+		const [date, morning, status, evening, late, comment] = item;
+
+		const row = document.createElement('tr');
+		const cellContents = [date, morning, status, evening, late, comment];
+
+		cellContents.forEach(content => {
+			const cell = document.createElement('td');
+			cell.textContent = content;
+			row.appendChild(cell);
+		});
+
+		tableBody.appendChild(row);
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Attach event listener to the dropdown menu
+document.getElementById('fileTypeDropdown').addEventListener('change', function() {
+	downloadData();
+});
+
+function downloadData() {
+	const selectedFormat = document.getElementById('fileTypeDropdown').value;
+
+	// Convert data to the selected format
+	let formattedData;
+	if (selectedFormat === 'csv') {
+		formattedData = convertToCSV(tableAttendanceData);
+	} else if (selectedFormat === 'json') {
+		formattedData = JSON.stringify(tableAttendanceData, null, 2);
+	} else if (selectedFormat === 'excel') {
+		formattedData = convertToExcel(tableAttendanceData);
+	} else if (selectedFormat === 'xml') {
+		formattedData = convertToXML(tableAttendanceData);
+	} else {
+		console.error('Invalid file format selected');
+		return;
+	}
+
+	// Create a blob with the formatted data
+	const blob = new Blob([formattedData], { type: 'text/plain' });
+
+	// Create a link element and set its attributes
+	const link = document.createElement('a');
+	link.href = URL.createObjectURL(blob);
+
+	const year = yearSelect.value;
+	const month = monthSelect.value;
+	const user = document.getElementById('user-data').getAttribute('data-username');
+	link.download = `${user}-${year}_month-${month}.${selectedFormat}`;
+
+	// Append the link to the body and trigger the download
+	document.body.appendChild(link);
+	link.click();
+
+	// Clean up by removing the link element
+	document.body.removeChild(link);
+}
+
+function convertToCSV(data) {
+	return data.map(row => row.join(',')).join('\n');
+}
+
+function convertToExcel(results) {
+	var workbook = XLSX.utils.book_new();
+	var worksheet = XLSX.utils.json_to_sheet(results);
+	XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+	var excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+	return excelBuffer;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 function updatePerformance() {
 	updateAttendanceData();
+	 updateAttendanceCounts();
+	renderAttendanceTable(tableAttendanceData);
 }
 
 window.onload = updatePerformance;

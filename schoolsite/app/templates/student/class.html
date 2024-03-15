@@ -38,6 +38,11 @@
 						<div>
 							<div>Top Female Student</div>
 							<div>
+								{% if top_student["Female"][-1] == 'default.png' %}
+									<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								{% else %}
+									<img src="{{ top_student['Female'][-1] }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								{% endif %}
                                <p>Student Name :<span>{{ top_student["Female"][0] }}</span></p>
 								<p>Gender: {{ top_student["Female"][1] }} </p>
 								<p>Total score: {{ top_student["Female"][2] }}</p>
@@ -46,6 +51,11 @@
 						<div>
 							<div>Top Male Student</div>
 							<div>
+								{% if top_student["Male"][-1] == 'default.png' %}
+									<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								{% else %}
+									<img src="{{ top_student['Male'][-1] }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								{% endif %}
 							   <p>Student Name :<span>{{ top_student["Male"][0] }}</span></p>
 								<p>Gender: {{ top_student["Male"][1] }} </p>
 								<p>Total score: {{ top_student["Male"][2] }}</p>
@@ -84,8 +94,13 @@
 							<span>Student Performance</span>
 					     </div>
 						 <div>
-							 <div>Top Male Student</div>
+							 <div>Current Student</div>
 							 <div>
+								 {% if current_user.image_link == 'default.png' %}
+									 <img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								 {% else %}
+									 <img src="{{ current_user.image_link }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+								 {% endif %}
 								<p>Name :<span>{{ current_user.__str__() }}</span></p>
 								 <p>Gender: {{ current_user.gender }} </p>
 								 <p>Total score: {{ user_scores.get(current_user.gender)[0][-1] }}</p>

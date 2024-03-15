@@ -52,6 +52,9 @@
    .present {
 	 background-color: #4CAF50; /* Green color for present */
    }
+   .late {
+			background-color: #4CAF51; /* Green color for present */
+		  }
 
    .absent {
 	 background-color: #FF5733; /* Red color for absent */
@@ -69,6 +72,21 @@
 		<!-- Calendar View -->
 		<div >
 			<div>
+				<div>
+					<div class="profile">
+						<div>Current Student</div>
+						 <div>
+							 {% if current_user.image_link == 'default.png' %}
+								 <img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+							 {% else %}
+								 <img src="{{ current_user.image_link }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+							 {% endif %}
+							<p>Name :<span>{{ current_user.__str__() }}</span></p>
+							 <p>Gender: {{ current_user.gender }} </p>
+							 <p>Total score: {{ user_scores.get(current_user.gender)[0][-2] }}%</p>
+						 </div>
+					</div>
+				</div>
 				<div>
 					<select id="year-select" class="filterSelect">
 						{% if results.get('year') %}
@@ -92,10 +110,11 @@
 		<!-- Summary Statistics -->
 		<div class="summary">
 			<h2>Summary Statistics</h2>
-			<p>Total Days Present: <span id="days-present">25</span></p>
-			<p>Total Days Absent: <span id="days-absent">5</span></p>
-			<p>Total Days Late: <span id="days-late">3</span></p>
-			<!-- Add percentage breakdown if needed -->
+			<div>
+			  <div>Total Days Present: <span id="presentCountElement"></span></div>
+			  <div>Total Days Absent: <span id="absentCountElement"></span></div>
+			  <div>Total Days Late: <span id="lateCountElement"></span></div>
+			</div>
 		</div>
 
 		<!-- Detailed Attendance List -->
@@ -105,34 +124,30 @@
 				<thead>
 					<tr>
 						<th>Date</th>
+						<th>Morning</th>
 						<th>Status</th>
-						<th>Remarks</th>
-						<!-- Add more columns if needed -->
+						<th>Evening</th>
+						<th>Late</th>
+						<th>Comment</th>
 					</tr>
 				</thead>
-				<tbody>
-					<!-- Attendance records dynamically populated here -->
+				<tbody id="attendanceTableBody">
 					<!-- Example: <tr><td>2024-03-14</td><td>Present</td><td></td></tr> -->
 				</tbody>
 			</table>
-		</div>
-
-		<!-- Filtering Options -->
-		<div class="filters">
-			<h2>Filter Options</h2>
-			<!-- Add filtering controls here, such as date range selector, status filter, etc. -->
-			<!-- Example: <input type="date" id="start-date"><input type="date" id="end-date"> -->
-		</div>
-
-		<!-- Actions and Interactions -->
-		<div class="actions">
-			<h2>Actions</h2>
-			<!-- Add actions for marking attendance, requesting corrections, etc. -->
-			<!-- Example: <button id="mark-attendance">Mark Attendance</button> -->
+			<div class="filter">
+				<select id="fileTypeDropdown" class="filterSelect">
+					<option >Download</option>
+					{% for file in ['excel', 'csv', 'json', 'xml'] %}
+						  <option value="{{ file }}">{{ file }}</option>
+					{% endfor %}
+				</select>
+			</div>
 		</div>
 	</div>
 {% endblock %}
 
 {% block script %}
+		  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
 		  <script src="{{ url_for('static', filename='js/student/attendance.js') }}"></script>
 {% endblock %}

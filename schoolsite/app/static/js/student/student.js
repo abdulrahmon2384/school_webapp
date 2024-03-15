@@ -167,7 +167,9 @@ function convertToExcel(results) {
 	return excelBuffer;
 }
 
-
+function convertToCSV(data) {
+	return data.map(row => row.join(',')).join('\n');
+}
 
 function downloadData(fileType) {
   fetchData(results => {

@@ -3,9 +3,9 @@
     "schoolsite/app/templates/student/attendance.html": [
       {
         "id": "9a3bbb48-0a22-4abd-bfc6-f51baed41b45",
-        "line": 23,
-        "version": 70,
-        "index": 389
+        "line": 68,
+        "version": 122,
+        "index": 1646
       }
     ]
   }
