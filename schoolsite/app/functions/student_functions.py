@@ -1,4 +1,4 @@
-from schoolsite.app.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement, Results
+from schoolsite.app.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement, Results, StudentFee
 from flask_login import login_user, current_user
 from flask import render_template, flash, request, url_for, redirect, jsonify
 from datetime import datetime
@@ -39,8 +39,13 @@ def fetch_grade(result, grades: dict = grades) -> str:
 	return 'F'
 
 
-def convert_date_string(date_string):
-	date_obj = datetime.strptime(str(date_string), "%Y-%m-%d %H:%M:%S")
+def convert_date_string(date_string, valid=True):
+	if valid:
+		date_obj = datetime.strptime(str(date_string), "%Y-%m-%d %H:%M:%S")
+	else:
+		date_obj = datetime.strptime(str(date_string),
+									"%Y-%m-%d %H:%M:%S.%f")
+
 	formatted_date = date_obj.strftime("%Y-%m-%d")
 	return formatted_date
 
@@ -258,3 +263,33 @@ def get_total_marks(class_id=None,
 
 	top_students = get_top_students(query)
 	return top_students
+
+
+def extract_fee_data(fee_data):
+	data = [{
+	    'date': convert_date_string(data.payment_date, False),
+	    "amount": data.fee_amount,
+	    "payment_method": data.payment_method,
+	    "status": data.payment_status if data.payment_status else 'Unknown',
+	    "comment": data.payment_note
+	} for data in fee_data]
+	return data
+
+
+def fetch_student_fee(student_username=None,
+                      class_id=None,
+                      year=None,
+                      term=None) -> dict:
+	filters = []
+	if student_username:
+		filters.append(StudentFee.student_username == student_username)
+	if class_id:
+		filters.append(StudentFee.class_id == class_id)
+	if year:
+		filters.append(StudentFee.year == year)
+	if term:
+		filters.append(StudentFee.term == term)
+
+	query = StudentFee.query.filter(*filters).all()
+	fee_detail = extract_fee_data(query)
+	return fee_detail

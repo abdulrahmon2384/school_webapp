@@ -12,8 +12,7 @@
 	}
     </style>
 {% endblock %}
-	
-{% endblock %}
+
 
 {% block title %}
         Parent | Gurdians Page
@@ -29,61 +28,104 @@
 
 
 {% block content %}
-      <div class="p-6">
+      <div class="p-6" >
+        <div>
+			    <div>
+					<header>
+						<h1>Welcome, {{ current_user.firstname }} {{ current_user.lastname }}</h1>
+						<p>Grade: 10</p>
+					</header>
 
-        <!-- dashboard start -->
-	
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md lg:col-span-2">
-					<div class="flex justify-between mb-4 items-start">
-                        <div class="font-medium">Upcoming Events</div>
+					<section class="profile-summary">
+						<div class="profile-picture">
+							{% if current_user.image_link == 'default.png' %}
+								 <img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+							 {% else %}
+								 <img src="{{ current_user.image_link }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+							 {% endif %}
+						</div>
+						<div class="profile-details">
+							<!-- Basic profile details -->
+							<p>Class Schedule:</p>
+							<ul>
+								<li>Math: Mon, Wed, Fri 9:00AM - 10:30AM</li>
+								<li>Science: Tue, Thu 11:00AM - 12:30PM</li>
+								<!-- Add more classes as needed -->
+							</ul>
+						</div>
+					</section>
+
+					<section class="academic-performance">
+						<h2>Academic Performance</h2>
+						<p>GPA: 3.8</p>
+						<!-- Add more details about academic performance -->
+					</section>
+
+					<section class="upcoming-assignments">
+						<h2>Upcoming Assignments</h2>
+						<ul>
+							<li>Math Quiz - Due: March 17th</li>
+							<li>Science Project - Due: March 20th</li>
+							<!-- Add more upcoming assignments -->
+						</ul>
+					</section>
+
+					<section >
+						<h2>Attendance Record</h2>
+						<p>Days Present: 45</p>
+						<p>Days Absent: 5</p>
+						<!-- Add more details about attendance record -->
+					</section>
+
+				</div>
+                <div >
+					<div >
+                        <div >Upcoming Events</div>
                     </div>
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+					<div >
 						{% if events %}
 							{% for event in events %}
-							<div class="rounded-md border border-dashed border-gray-200 p-4">
-								<div class="flex items-center mb-0.5">
-									<div class="text-xl font-semibold"><strong>Event:</strong>{{ event.name }}</div>
-									<span class="p-1 rounded text-[12px] font-semibold bg-blue-500/10 text-blue-500 leading-none ml-1">id{{ event.id }}</span>
+							<div >
+								<div >
+									<div ><strong>Event:</strong>{{ event.name }}</div>
+									<span >id{{ event.id }}</span>
 								</div>
-								<span class="text-gray-400 text-sm"><strong>Date:</strong>{{ event.date  }}</span>
+								<span ><strong>Date:</strong>{{ event.date  }}</span>
 							</div>
 							{% endfor %}
 
 						{% else %}
-							<div class="rounded-md border border-dashed border-gray-200 p-4">
-								<div class="flex items-center mb-0.5">
-									<div class="text-xl font-semibold"><strong>Event:</strong>Comming Soon.......</div>
-									<span class="p-1 rounded text-[12px] font-semibold bg-blue-500/10 text-blue-500 leading-none ml-1">...</span>
+							<div >
+								<div >
+									<div ><strong>Event:</strong>Comming Soon.......</div>
+									<span >...</span>
 								</div>
-								<span class="text-gray-400 text-sm"><strong>Date:</strong>........</span>
+								<span ><strong>Date:</strong>........</span>
 							</div>
 					    {% endif %}
 					</div>
                 </div>
-
                 <div >
-				
-                    <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md lg:col-span-2">
-							<div class="flex justify-between mb-4 items-start">
-								<div class="font-medium">Announcements</div>
+                    <div >
+							<div >
+								<div >Announcements</div>
 							</div>
 						    {% if announcements %}	
 						       {% for annoucement in announcements %}
-		                        <div class="announcement-container">
-		                            <div class="announcement">
-		                                <div class="announcement-title">{{ annoucement.title }}</div>
-		                                <p class="announcement-content">{{ annoucement.content }}</p><br>
-										<span class="text-gray-400 text-sm"><strong>Date:</strong>{{ annoucement.created_at }}</span>
+		                        <div >
+		                            <div >
+		                                <div >{{ annoucement.title }}</div>
+		                                <p >{{ annoucement.content }}</p><br>
+										<span ><strong>Date:</strong>{{ annoucement.created_at }}</span>
 		                            </div>
 		                        </div>
 								{% endfor %}
 						    {% else %}
-								<div class="announcement-container">
-									<div class="announcement">
-										<div class="announcement-title">Coming Soon...</div>
-										<p class="announcement-content">no avialaibe annoucements</p><br>
-										<span class="text-gray-400 text-sm"><strong>Date:</strong>.........</span>
+								<div >
+									<div >
+										<div >Coming Soon...</div>
+										<p >no avialaibe annoucements</p><br>
+										<span ><strong>Date:</strong>.........</span>
 									</div>
 								</div>
 						    {% endif %}
@@ -91,98 +133,8 @@
                 </div>
         </div>
         <!-- Dashboard end-->
-
-
-
-
-
-        <!-- Performance Area End -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6" id="Performance">
-            <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md">
-                <div class="flex justify-between mb-4 items-start">
-                    <div class="font-medium">Performance Area</div>
-                </div>
-                <div>
-					<div>
-						<div class="filter">
-							<label for="year">Year:</label>
-							<select id="year" onchange="updatePerformance()" class="filterSelect">
-								{% if results.get('year') %}
-								    {% for year in results.get('year') %}
-								        <option value="{{ year }}">{{ year }}</option>
-								    {% endfor %}
-                                {% endif %}
-							</select>
-						</div>
-						<div class="filter">
-							<label for="term">Term:</label>
-							<select id="term" onchange="updatePerformance()" class="filterSelect">
-								{% if results.get('term') %}
-									{% for term in results.get('term') %}
-										<option value="{{ term }}">{{ term }} {{ i }}</option>
-									{% endfor %}
-							    {% endif %}
-							</select>
-						</div>
-						<div class="filter">
-							<label for="result_type">Result Type:</label>
-							<select id="result_type" onchange="updatePerformance()" class="filterSelect">
-								{% if results.get('result_type') %}
-									{% for result_type in results.get('result_type') %}
-										<option value="{{ result_type }}">{{ result_type }}</option>
-									{% endfor %}
-								{% endif %}
-                            </select>
-						</div>
-					</div>
-                    <div class="overflow-x-auto">
-                        
-                        <table class="w-full min-w-[540px]">
-                            <thead>
-                                <tr>
-                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tl-md rounded-bl-md">Subject</th>
-                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Grade</th>
-                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Scores</th>
-                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tr-md rounded-br-md">Comments</th>
-                                </tr>
-                            </thead>
-                            <tbody id="performanceTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-					<div class="filter">
-						<select id="Download" class="filterSelect">
-							<option >Download</option>
-							{% for file in ['excel', 'csv', 'json', 'xml'] %}
-								  <option value="{{ file }}">{{ file }}</option>
-							{% endfor %}
-						</select>
-					</div>
-                </div>
-                
-                
-            <div>
-                <div class="font-medium">Child's Performance Overview</div>
-                <div>
-                     <div>
-                        <button class="tablinks" id="barChartButton">Grades Overview</button>
-                        <button class="tablinks" id="donutChartButton">Grades</button>
-                        <button class="tablinks" onclick="openTab(event, 'performanceTrends')">Performance Trends</button>
-                     </div>
-                     <div id="bar" class="tab">
-                         <canvas id="Chart" ></canvas>
-                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Performance Area end -->
 			
 {% endblock %}
 			
-{% block script %}
-		  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-		  <script src="{{ url_for('static', filename='js/student/student.js') }}"></script>
-{% endblock %}
-
 
 		  

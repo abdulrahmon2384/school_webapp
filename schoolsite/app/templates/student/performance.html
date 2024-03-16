@@ -12,6 +12,108 @@
 {% include "student/navbar.html" %}
 {% endblock %}
 
-{% block block %}
+{% block content %}
+    <!-- Performance Area End -->
+        <div  id="Performance">
+            <div >
+                <div >
+                    <div class="font-medium">Performance Area</div>
+                </div>
+				     <div>
+						 <section id="dashboard">
+							 <h2>Dashboard Overview</h2>
+							 <div id="summary">
+								 <p>Overall GPA: 3.75</p>
+								 <p>Average Score: 85%</p>
+								 <p>Notable Achievements: Student of the Month (September)</p>
+							 </div>
+						 </section>
+					 </div>
+                <div>
+					<div>
+						<div class="filter">
+							<label for="year">Year:</label>
+							<select id="year" onchange="updatePerformance()" class="filterSelect">
+								{% if results.get('year') %}
+								    {% for year in results.get('year') %}
+								        <option value="{{ year }}">{{ year }}</option>
+								    {% endfor %}
+                                {% endif %}
+							</select>
+						</div>
+						<div class="filter">
+							<label for="term">Term:</label>
+							<select id="term" onchange="updatePerformance()" class="filterSelect">
+								{% if results.get('term') %}
+									{% for term in results.get('term') %}
+										<option value="{{ term }}">{{ term }} {{ i }}</option>
+									{% endfor %}
+							    {% endif %}
+							</select>
+						</div>
+						<div class="filter">
+							<label for="result_type">Result Type:</label>
+							<select id="result_type" onchange="updatePerformance()" class="filterSelect">
+								{% if results.get('result_type') %}
+									{% for result_type in results.get('result_type') %}
+										<option value="{{ result_type }}">{{ result_type }}</option>
+									{% endfor %}
+								{% endif %}
+                            </select>
+						</div>
+					</div>
+                    <div class="overflow-x-auto">
+                        
+                        <table class="w-full min-w-[540px]">
+                            <thead>
+                                <tr>
+                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tl-md rounded-bl-md">Subject</th>
+                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Grade</th>
+                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Scores</th>
+                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tr-md rounded-br-md">Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performanceTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+					<div class="filter">
+						<select id="Download" class="filterSelect">
+							<option >Download</option>
+							{% for file in ['excel', 'csv', 'json', 'xml'] %}
+								  <option value="{{ file }}">{{ file }}</option>
+							{% endfor %}
+						</select>
+					</div>
+                </div>
+                
+                
+            <div>
+                <div class="font-medium">Child's Performance Overview</div>
+                <div>
+                     <div>
+                        <button class="tablinks" id="barChartButton">Grades Overview</button>
+                        <button class="tablinks" id="donutChartButton">Grades</button>
+                        <button class="tablinks" onclick="openTab(event, 'performanceTrends')">Performance Trends</button>
+                     </div>
+                     <div id="bar" class="tab">
+                         <canvas id="Chart" ></canvas>
+                     </div>
+                </div>
+            </div>
+			<div>
+				<!-- Teacher Feedback -->
+				<section id="teacher-feedback">
+					<h2>Teacher Feedback</h2>
+					<div id="feedback">
+						<!-- Teacher feedback content goes here -->
+					</div>
+				</section>
+			</div>
+        </div>
+        <!-- Performance Area end -->
+{% endblock %}
 
+{% block script %}
+		  <script src="{{ url_for('static', filename='js/student/performance.js') }}"></script>
 {% endblock %}

@@ -3,6 +3,7 @@ let attendanceData = {};
 let presentCount = 0;
 let	absentCount = 0;
 let lateCount = 0;
+let chart
 
 
 // Function to update attendance data based on selected year and month
@@ -18,6 +19,7 @@ yearSelect.addEventListener("change", () => {
 	updateAttendanceData();
 	updateAttendanceCounts();
 	renderAttendanceTable(tableAttendanceData);
+	generateDonutChart();
 });
 
 // Event listener for the month dropdown menu
@@ -26,6 +28,7 @@ monthSelect.addEventListener("change", () => {
 	updateAttendanceData();
 	 updateAttendanceCounts();
 	renderAttendanceTable(tableAttendanceData);
+	generateDonutChart();
 });
 
 // Function to fetch attendance data from the server
@@ -42,6 +45,7 @@ function fetchAttendanceData(dataProcessed) {
 			generateCalendar();
 			updateAttendanceCounts();
 			renderAttendanceTable(tableAttendanceData);
+			generateDonutChart();
 		})
 		.catch(error => console.error('Error fetching data:', error));
 }
@@ -159,7 +163,71 @@ function renderAttendanceTable(tableAttendanceData) {
 
 
 
+// Function to generate donut chart
+function generateDonutChart() {
+	//console.log(presentCount,absentCount,lateCount)
+	var ctx = document.getElementById('donutChart').getContext('2d');
+	let data = {
+		type: 'doughnut',
+		data: {
+			labels: ['Present', 'Absent', 'Late'],
+			datasets: [{
+				label: '# of Students',
+				data: [presentCount, absentCount, lateCount],
+				backgroundColor: [
+					'rgba(75, 192, 192, 0.5)',
+					'rgba(255, 99, 132, 0.5)',
+					'rgba(255, 206, 86, 0.5)'
+				],
+				borderColor: [
+					'rgba(75, 192, 192, 1)',
+					'rgba(255, 99, 132, 1)',
+					'rgba(255, 206, 86, 1)'
+				],
+				borderWidth: 2
+			}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			title: {
+				display: true,
+				text: 'Attendance Overview',
+				fontSize: 18,
+				fontColor: '#333',
+				padding: 20
+			},
+			legend: {
+				display: true,
+				position: 'bottom',
+				labels: {
+					fontSize: 14,
+					fontColor: '#333',
+					padding: 10
+				}
+			},
+			tooltips: {
+				callbacks: {
+					label: function(tooltipItem, data) {
+						var dataset = data.datasets[tooltipItem.datasetIndex];
+						var total = dataset.data.reduce(function(previousValue, currentValue, currentIndex, array) {
+							return previousValue + currentValue;
+						});
+						var currentValue = dataset.data[tooltipItem.index];
+						var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
+						return percentage + '%';
+					}
+				}
+			}
+		}
+	};
 
+	// If there's an existing chart, destroy it first
+	if (chart) {
+			chart.destroy();
+	}
+	chart = new Chart(ctx, data);
+}
 
 
 
@@ -242,6 +310,7 @@ function updatePerformance() {
 	updateAttendanceData();
 	 updateAttendanceCounts();
 	renderAttendanceTable(tableAttendanceData);
+	generateDonutChart();
 }
 
 window.onload = updatePerformance;

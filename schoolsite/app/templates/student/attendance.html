@@ -64,7 +64,7 @@
 
 {% block content %}
 	<!-- Page Content -->
-	<div class="container" id="user-data" data-username="{{ current_user.username }}">
+	<div class="container  p-6" id="user-data" data-username="{{ current_user.username }}">
 		
 		<h3>Attendance Tracking</h3>
 		<p>View and manage attendance records for students.</p>
@@ -104,7 +104,16 @@
 				  </select>
 				</div>
 			</div>
+			<ul>
+				<li>
+					<div class="calendar" id="calendar"></div>
+				</li>
+				<li>
+					<canvas id="donutChart" ></canvas>
+				</li>
+			</ul>
 			<div class="calendar" id="calendar"></div>
+			
 		</div>
 
 		<!-- Summary Statistics -->
@@ -143,6 +152,7 @@
 					{% endfor %}
 				</select>
 			</div>
+			<div>
 		</div>
 	</div>
 {% endblock %}

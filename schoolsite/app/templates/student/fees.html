@@ -12,6 +12,133 @@
 {% include "student/navbar.html" %}
 {% endblock %}
 
-{% block block %}
-
+{% block content %}
+    <div>
+		<h1>Student School Fee</h1>
+	
+		<!-- Overview Section -->
+		<section id="overview">
+			<div>
+				<h1>Class:</h1>
+				<p>School Fee :</p>
+				
+			</div>
+			<div class="summary-card">
+				<h2>Fee Status Summary</h2>
+				<p><strong>Total Paid:</strong></p>
+				<p class="total">$500.00</p>
+				<p><strong>Next Payment Due Date</strong></p>
+				<p>(Due on 03/15/2024)</p>
+				<p><strong>Outstanding Dues:</strong></p>
+				<p>$200.00</p>
+				<button class="action-button">Make Payment</button>
+			</div>
+		</section>
+	
+		<!-- Payment History Section -->
+		<section id="payment-history">
+			<h2>Payment History</h2>
+			<div>
+				<div class="filter">
+					<label for="year">Year:</label>
+					<select id="year" onchange="updatePerformance()" class="filterSelect">
+						{% if results.get('year') %}
+							{% for year in results.get('year') %}
+								<option value="{{ year }}">{{ year }}</option>
+							{% endfor %}
+						{% endif %}
+					</select>
+				</div>
+				<div class="filter">
+					<label for="term">Term:</label>
+					<select id="term" onchange="updatePerformance()" class="filterSelect">
+						{% if results.get('term') %}
+							{% for term in results.get('term') %}
+								<option value="{{ term }}">{{ term }} {{ i }}</option>
+							{% endfor %}
+						{% endif %}
+					</select>
+				</div>
+			</div>
+			<table>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Amount</th>
+						<th>Payment Method</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>MM/DD/YYYY</td>
+						<td>₦XXX.XX</td>
+						<td>Credit Card</td>
+					</tr>
+					<!-- Add more rows for additional payment history -->
+				</tbody>
+			</table>
+		</section>
+	
+		<!-- Upcoming Due Dates Section -->
+		<section id="upcoming-due-dates">
+			<h2>Upcoming Due Dates</h2>
+			<ul>
+				<li>MM/DD/YYYY - ₦XXX.XX</li>
+				<!-- Add more list items for additional due dates -->
+			</ul>
+		</section>
+	
+		<!-- Outstanding Balances Section -->
+		<div class="container">
+			<h2>Fee Status - Detailed Breakdown</h2>
+			<table>
+				<tr>
+					<th>Category</th>
+					<th>Amount</th>
+				</tr>
+				<tr>
+					<td>Tuition Fees</td>
+					<td>$500.00</td>
+				</tr>
+				<tr>
+					<td>Extracurricular Activities</td>
+					<td>$100.00</td>
+				</tr>
+				<tr>
+					<td>Books and Supplies</td>
+					<td>$50.00</td>
+				</tr>
+				<tr class="total">
+					<td>Total</td>
+					<td>$650.00</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div class="container">
+		  <h2>Payment Options</h2>
+		  <div class="payment-methods">
+			<div class="payment-method">
+			  <img src="credit-card.png" alt="Credit Card">
+			  <p>Credit Card</p>
+			</div>
+			<div class="payment-method">
+			  <img src="bank-transfer.png" alt="Bank Transfer">
+			  <p>Bank Transfer</p>
+			</div>
+			<div class="payment-method">
+			  <img src="paypal.png" alt="PayPal">
+			  <p>PayPal</p>
+			</div>
+		  </div>
+		</div>
+	
+		<!-- Help and Support Section -->
+		<section id="help-support">
+			<h2>Help and Support</h2>
+			<p>For assistance with school fees, please contact:</p>
+			<p>Email: support@example.com</p>
+			<p>Phone: XXX-XXX-XXXX</p>
+		</section>
+    </div>
 {% endblock %}

@@ -289,21 +289,19 @@ def generate_fake_results(students, terms, result_types):
 
 def generate_fake_student_fees(students, years, terms):
 	student_fees = []
-	n = random.randint(1, 4)
+	n = 4
 	for student in students:
 		for year in years:
 			for term in terms:
 				amount = [student.class_.class_fee // n] * n
 				for fee_amount in amount:
-					fee_amount = random.randint(
-					    5000, 20000)  # Generate a random fee amount
 					payment_date = fake.date_time_between_dates(
 					    datetime.strptime(f"{year}-01-01", "%Y-%m-%d"),
 					    datetime.strptime(f"{year}-12-31", "%Y-%m-%d"))
 					payment_method = fake.random_element(
 					    elements=('Cash', 'Credit Card', 'Bank Transfer'))
-					payment_status = fake.random_element(elements=('Paid',
-					                                               'Unpaid'))
+					payment_status = fake.random_element(
+					    elements=('Pendin', 'Successfull'))
 					payment_note = fake.text()
 
 					student_fee = StudentFee(transaction_id=str(uuid.uuid4()),

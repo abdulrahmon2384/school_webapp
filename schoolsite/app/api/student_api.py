@@ -50,5 +50,19 @@ def get_user_attendance():
 		return jsonify({"error": "Attendance data not found."}), 404
 
 
-#/api/attendance?term=first%20term&username=allen76
-#/api/attendance?term=first%20term&username=flewis
+@student_api_bp.route('/api/student/fee', methods=['GET'])
+@login_required
+def get_student_fee():
+	year = request.args.get('year')
+	term = request.args.get('term')
+	username = current_user.username
+
+	if not (term and year and username):
+		return jsonify(
+		    {"error": "Please provide term, year, and result_type."}), 400
+
+	res = fetch_student_fee(student_username=current_user.username,
+	                        class_id=current_user.class_id,
+	                        year='2023',
+	                        term="first term")
+	return jsonify({'fee': res})
