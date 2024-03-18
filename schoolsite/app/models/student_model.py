@@ -13,6 +13,7 @@ class Class(db.Model):
 	class_books = db.Column(JSON, nullable=True)
 	class_description = db.Column(db.Text, nullable=True)
 	class_time_table = db.Column(JSON, nullable=True)
+	class_lesson_fee = db.Column(db.Integer, nullable=True)
 	materials = db.Column(db.String(200), nullable=True)
 	teacher_username = db.Column(db.Integer,
 	                             db.ForeignKey("teacher.username"),

@@ -74,8 +74,8 @@ def performance():
 @student_bp.route('/student/fee', methods=['GET'])
 @login_required
 def fee():
-	page = "Student Fee"
+	page = "School Fee"
 	student_results = fetch_student_result(current_user.username)
 	result = columns(student_results, ['year', 'term', 'result_type'])
     
-	return render_template("student/fees.html", results=result, payment_dew_date=payment_dew_date)
+	return render_template("student/fees.html", results=result, payment_dew_date=payment_dew_date, page=page)

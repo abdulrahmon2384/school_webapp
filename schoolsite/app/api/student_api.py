@@ -60,7 +60,6 @@ def get_student_fee():
 
 	if not (user and class_id):
 		return jsonify({"error": "Please provide username and class_id."}), 400
-
 	data = fetch_student_fee(class_id=class_id,
 	                         student_username=user,
 	                         term=term,
@@ -78,9 +77,20 @@ def return_student_class_fee():
 
 	if not (user and class_id):
 		return jsonify({"error": "Please provide username and class_id."}), 400
-
 	results = get_fee_detail(user=user,
 	                         class_id=class_id,
 	                         term=term,
 	                         year=year)
 	return jsonify(results)
+
+
+
+@student_api_bp.route('/api/student/supplies_Books_amount', methods=['GET'])
+@login_required
+def class_lesson_supplies():
+    class_id = request.args.get('class_id')
+	
+    if not class_id:
+        return jsonify({"error": "Please provide class_id."}), 404
+    results = supplies_and_lesson_fee(class_id)
+    return jsonify(results)

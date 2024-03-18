@@ -328,3 +328,25 @@ def get_fee_detail(user: str, class_id: str, term: str, year: str) -> list:
 			return data
 	return []
 
+
+
+
+def extract_supplies_class_lesson_amount(class_obj):
+    book_total_amount = sum(class_obj.class_books['amounts'])
+    to_dict = {
+		"class_fee":class_obj.class_fee,
+		"lesson_fee":class_obj.class_lesson_fee,
+		"Books_total": book_total_amount,
+		"Total": float(class_obj.class_fee) + float(class_obj.class_lesson_fee) + float(book_total_amount)
+	}
+    return to_dict
+
+
+
+def supplies_and_lesson_fee(class_id: str):
+    class_obj = Class.query.filter_by(id=class_id).first()
+    if class_obj:
+        data = extract_supplies_class_lesson_amount(class_obj)
+        return data
+    return {}
+

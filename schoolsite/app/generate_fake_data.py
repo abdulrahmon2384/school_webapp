@@ -225,6 +225,7 @@ def generate_fake_classes(teachers, class_names):
 		class_instance = Class(class_name=class_name,
 		                       class_fee=class_fee,
 		                       class_subjects=class_subjects,
+							   class_lesson_fee = random.randint(1000, 3000),
 		                       class_books=class_books,
 		                       class_description=class_description,
 		                       class_time_table=class_time_table,
