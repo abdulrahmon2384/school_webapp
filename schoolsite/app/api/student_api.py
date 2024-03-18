@@ -55,14 +55,33 @@ def get_user_attendance():
 def get_student_fee():
 	year = request.args.get('year')
 	term = request.args.get('term')
-	username = current_user.username
+	user = request.args.get('username')
+	class_id = request.args.get('class_id')
 
-	if not (term and year and username):
-		return jsonify(
-		    {"error": "Please provide term, year, and result_type."}), 400
+	if not (user and class_id):
+		return jsonify({"error": "Please provide username and class_id."}), 400
 
-	res = fetch_student_fee(student_username=current_user.username,
-	                        class_id=current_user.class_id,
-	                        year='2023',
-	                        term="first term")
-	return jsonify({'fee': res})
+	data = fetch_student_fee(class_id=class_id,
+	                         student_username=user,
+	                         term=term,
+	                         year=year)
+	return jsonify({'fee': data})
+
+
+
+
+@student_api_bp.route('/api/student/fee_details', methods=['GET'])
+#@login_required
+def return_student_class_fee():
+	year = request.args.get('year')
+	term = request.args.get('term')
+	user = request.args.get('username')
+	class_id = request.args.get('class_id')
+
+	if not (user and class_id):
+		return jsonify({"error": "Please provide username and class_id."}), 400
+	results = get_fee_detail(user=user,
+	                         class_id=class_id,
+	                         term=term,
+	                         year=year)
+	return jsonify(results)

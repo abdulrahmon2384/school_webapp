@@ -1,5 +1,13 @@
 {
   "files": {
+    "schoolsite/app/models/student_model.py": [
+      {
+        "id": "f893fbfa-124e-48a9-8be6-6a8f3872404e",
+        "line": 125,
+        "version": 1351,
+        "index": 5543
+      }
+    ],
     "schoolsite/app/templates/student/attendance.html": [
       {
         "id": "9a3bbb48-0a22-4abd-bfc6-f51baed41b45",

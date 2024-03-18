@@ -10,6 +10,7 @@ password = "password"
 hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
 
+# Generate fake student data
 def generate_random_subjects(n):
 	subjects = [
 	    "Mathematics", "English Language", "Science", "Social Studies",
@@ -287,13 +288,24 @@ def generate_fake_results(students, terms, result_types):
 	return results
 
 
+def divide_number_into_four_parts(number, deducted_value=0):
+	number -= deducted_value
+	quotient = number // 4
+	remainder = number % 4
+	result = [quotient] * 4
+	for i in range(remainder):
+		result[i] += 1
+	return result
+
+
 def generate_fake_student_fees(students, years, terms):
 	student_fees = []
-	n = 4
 	for student in students:
 		for year in years:
 			for term in terms:
-				amount = [student.class_.class_fee // n] * n
+				n = random.choice([0, 1200, 500, 300, 200])
+				amount = divide_number_into_four_parts(
+				    student.class_.class_fee, n)
 				for fee_amount in amount:
 					payment_date = fake.date_time_between_dates(
 					    datetime.strptime(f"{year}-01-01", "%Y-%m-%d"),
@@ -301,7 +313,7 @@ def generate_fake_student_fees(students, years, terms):
 					payment_method = fake.random_element(
 					    elements=('Cash', 'Credit Card', 'Bank Transfer'))
 					payment_status = fake.random_element(
-					    elements=('Pendin', 'Successfull'))
+					    elements=('Pendint', 'Successfull'))
 					payment_note = fake.text()
 
 					student_fee = StudentFee(transaction_id=str(uuid.uuid4()),
@@ -370,20 +382,7 @@ def generate_fake_attendance(model, persons, terms, role='Student'):
 
 
 with app.app_context():
-	students = Student.query.all()
-	term = {
-	    'first term': [datetime(2024, 1, 1),
-	                   datetime(2024, 3, 31)],
-	    'second term': [datetime(2024, 4, 1),
-	                    datetime(2024, 7, 31)],
-	    'third term': [datetime(2024, 8, 1),
-	                   datetime(2024, 11, 30)],
-	}
-	students_attendance = generate_fake_attendance(StudentAttendance, students,
-	                                               term)
-	db.session.add_all(students_attendance)
-	db.session.commit()
-""""
+
 	db.create_all()
 	admins = generate_fake_admins(2)
 	db.session.add_all(admins)
@@ -407,7 +406,7 @@ with app.app_context():
 	db.session.add_all(students)
 	db.session.commit()
 
-	years = [2023]
+	years = [2023, 2024]
 	students = Student.query.all()
 	terms = ['first term', 'second term', 'third term']
 	result_types = ['exam', 'assignment', 'quiz', 'test']
@@ -446,4 +445,16 @@ with app.app_context():
 	db.session.add_all(annoucements)
 	db.session.commit()
 	print("Done.......")
-"""
+	students = Student.query.all()
+	term = {
+	    'first term': [datetime(2024, 1, 1),
+	                   datetime(2024, 3, 31)],
+	    'second term': [datetime(2024, 4, 1),
+	                    datetime(2024, 7, 31)],
+	    'third term': [datetime(2024, 8, 1),
+	                   datetime(2024, 11, 30)],
+	}
+	students_attendance = generate_fake_attendance(StudentAttendance, students,
+	                                               term)
+	db.session.add_all(students_attendance)
+	db.session.commit()

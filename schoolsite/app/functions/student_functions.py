@@ -3,7 +3,7 @@ from flask_login import login_user, current_user
 from flask import render_template, flash, request, url_for, redirect, jsonify
 from datetime import datetime
 import math, itertools, collections, sqlalchemy, typing, pytz
-from sqlalchemy import func, case
+from sqlalchemy import func, case, text
 from schoolsite.app import db
 from collections import defaultdict
 
@@ -43,8 +43,7 @@ def convert_date_string(date_string, valid=True):
 	if valid:
 		date_obj = datetime.strptime(str(date_string), "%Y-%m-%d %H:%M:%S")
 	else:
-		date_obj = datetime.strptime(str(date_string),
-									"%Y-%m-%d %H:%M:%S.%f")
+		date_obj = datetime.strptime(str(date_string), "%Y-%m-%d %H:%M:%S.%f")
 
 	formatted_date = date_obj.strftime("%Y-%m-%d")
 	return formatted_date
@@ -276,20 +275,55 @@ def extract_fee_data(fee_data):
 	return data
 
 
-def fetch_student_fee(student_username=None,
-                      class_id=None,
-                      year=None,
-                      term=None) -> dict:
+def fetch_student_fee(class_id,
+                      student_username,
+                      term=None,
+                      year=None) -> list:
 	filters = []
-	if student_username:
-		filters.append(StudentFee.student_username == student_username)
-	if class_id:
-		filters.append(StudentFee.class_id == class_id)
-	if year:
-		filters.append(StudentFee.year == year)
-	if term:
-		filters.append(StudentFee.term == term)
+	valid_student = Student.query.filter_by(class_id=class_id,
+	                                        username=student_username).first()
 
-	query = StudentFee.query.filter(*filters).all()
-	fee_detail = extract_fee_data(query)
-	return fee_detail
+	if valid_student:
+		filters.append(StudentFee.class_id == class_id)
+		filters.append(StudentFee.student_username == student_username)
+		if term:
+			filters.append(StudentFee.term == term)
+		if year:
+			filters.append(StudentFee.year == year)
+		query = StudentFee.query.filter(*filters).all()
+		data = extract_fee_data(query)
+		return data
+
+	return []
+
+
+def return_class_column(class_id):
+	query = Class.query.filter_by(id=class_id).first()
+	if query:
+		return query
+	return []
+
+
+def extract_fee_datails(results: str) -> dict:
+	columns = return_class_column(results.class_id)
+	to_dict = {
+	    "class_name": columns.class_name,
+	    "class_fee": columns.class_fee,
+	    "class_id": columns.id,
+		"dept":float(columns.class_fee) - float(results.amount_paid),
+	    "amount_paid": results.amount_paid
+	}
+	return to_dict
+
+
+def get_fee_detail(user: str, class_id: str, term: str, year: str) -> list:
+	if year:
+		results = db.session.query(
+		    StudentFee.class_id.label("class_id"),
+		    func.sum(StudentFee.fee_amount).label("amount_paid")).filter_by(
+		        class_id=class_id, term=term,
+		        student_username=user, year=year).group_by(StudentFee.class_id).first()
+		if results:
+			data = extract_fee_datails(results)
+			return data
+	return []
