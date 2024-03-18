@@ -1,77 +1,17 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 
 {% block title %}
-		 teacher page
+		 teacher portal
+{% endblock %}
+
+{% block navbar %}
+{% include "teacher/navbar.html" %}
+{% endblock %}
+
+{% block slicebar %}
+    {% include "teacher/slicebar.html" %}
 {% endblock %}
 
 {% block content %}
 	<h1>Teacher Page</h1>
 {% endblock %}
-
-
-
-<div >
-	<div >
-		<label for="year">Year:</label>
-		<selectid="year" >
-			<option value="">All</option>
-			{% if results.get('year') %}
-				{% for year in results.get('year') %}
-					<option value="{{ year }}">{{ year }}</option>
-				{% endfor %}
-			{% endif %}
-		</select>
-	</div>
-	<div >
-		<label for="term">Term:</label>
-		<select id="term">
-			<option value="">All</option>
-			{% if results.get('term') %}
-				{% for term in results.get('term') %}
-					<option value="{{ term }}">{{ term }} {{ i }}</option>
-				{% endfor %}
-			{% endif %}
-		</select>
-	</div>
-	<div >
-		<label for="result_type">Result Type:</label>
-		<select id="result_type">
-			<option value="">All</option>
-			{% if results.get('result_type') %}
-				{% for result_type in results.get('result_type') %}
-					<option value="{{ result_type }}">{{ result_type }}</option>
-				{% endfor %}
-			{% endif %}
-		</select>
-	</div>
-</div>
-<div class="overflow-x-auto">
-
-	<table class="w-full min-w-[540px]">
-		<thead>
-			<tr>
-				<th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tl-md rounded-bl-md">Subject</th>
-				<th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Grade</th>
-				<th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Test Scores</th>
-				<th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tr-md rounded-br-md">Comments</th>
-			</tr>
-		</thead>
-		<tbody id="performance_data_body">
-			<tr>
-				<td class="py-2 px-4 border-b border-b-gray-50">
-					<div class="flex items-center">
-						<a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Subject Name</a>
-					</div>
-				</td>
-				<td class="py-2 px-4 border-b border-b-gray-50">
-					<span class="text-[13px] font-medium text-gray-400">A+</span>
-				</td>
-				<td class="py-2 px-4 border-b border-b-gray-50">
-					<span class="text-[13px] font-medium text-gray-400">85%</span>
-				</td>
-				<td class="py-2 px-4 border-b border-b-gray-50">
-					<span class="text-[13px] font-medium text-gray-400">Strong understanding of concepts</span>
-				</td>
-			</tr>
-		</tbody>
-	</table>

@@ -1,5 +1,6 @@
 { pkgs }: {
   deps = [
+    pkgs.sqlite
     pkgs.select username from student limit 5;
     pkgs.select username from student limit 5;
     pkgs.select username from student limit 5;

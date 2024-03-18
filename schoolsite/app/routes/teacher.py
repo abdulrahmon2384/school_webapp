@@ -5,12 +5,13 @@ from flask_login import login_user, current_user, logout_user, login_required
 from schoolsite.app.functions import *
 
 teacher_bp = Blueprint('teacher', __name__)
+school_name = "School OF Coding"
 
 
 @teacher_bp.route('/teachers/dashboard', methods=['GET'])
 @login_required
 def dashboard():
-	return render_template("teacher/index.html")
+	return render_template("teacher/index.html", school_name=school_name)
 
 
 @teacher_bp.route('/teachers/attendance', methods=['GET'])

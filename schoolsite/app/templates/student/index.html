@@ -32,8 +32,8 @@
         <div>
 			    <div>
 					<header>
-						<h1>Welcome, {{ current_user.firstname }} {{ current_user.lastname }}</h1>
-						<p>Grade: 10</p>
+						<h1>Welcome, {{ current_user }}</h1>
+						<p>Username : <span>{{ current_user.username }}</span></p>
 					</header>
 
 					<section class="profile-summary">
