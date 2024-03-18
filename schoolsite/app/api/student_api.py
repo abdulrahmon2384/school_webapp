@@ -68,10 +68,8 @@ def get_student_fee():
 	return jsonify({'fee': data})
 
 
-
-
 @student_api_bp.route('/api/student/fee_details', methods=['GET'])
-#@login_required
+@login_required
 def return_student_class_fee():
 	year = request.args.get('year')
 	term = request.args.get('term')
@@ -80,6 +78,7 @@ def return_student_class_fee():
 
 	if not (user and class_id):
 		return jsonify({"error": "Please provide username and class_id."}), 400
+
 	results = get_fee_detail(user=user,
 	                         class_id=class_id,
 	                         term=term,

@@ -13,10 +13,6 @@ number_of_event = 4
 number_of_annoucement = 3
 table_row = 7
 payment_dew_date = "2024-10-05"
-months = [
-    'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct',
-    'nov', 'dec'
-]
 
 
 @student_bp.route('/student/dashboard', methods=['GET'])
@@ -81,4 +77,5 @@ def fee():
 	page = "Student Fee"
 	student_results = fetch_student_result(current_user.username)
 	result = columns(student_results, ['year', 'term', 'result_type'])
-	return render_template("student/fees.html", results=result)
+    
+	return render_template("student/fees.html", results=result, payment_dew_date=payment_dew_date)

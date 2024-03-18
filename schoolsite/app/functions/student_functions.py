@@ -327,3 +327,4 @@ def get_fee_detail(user: str, class_id: str, term: str, year: str) -> list:
 			data = extract_fee_datails(results)
 			return data
 	return []
+
