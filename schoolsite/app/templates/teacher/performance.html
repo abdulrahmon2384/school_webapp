@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}
+		 teacher portal
+{% endblock %}
+
+{% block navbar %}
+{% include "teacher/navbar.html" %}
+{% endblock %}
+
+{% block slicebar %}
+	{% include "teacher/slicebar.html" %}
+{% endblock %}
+
+{% block content %}
+    <div>
+		<header>
+			<div>
+				<div>Student Performance - Class {{ cl.class_name }}</div>
+				<div>
+					<div>
+						{% if current_user.image_link == 'default.png' %}
+							<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+						{% else %}
+							<img src="{{ current_user.image_link }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+						{% endif %}
+					</div>
+					<div><strong>Name:</strong> {{ current_user }}</div>
+					<div><strong>Username:</strong>{{ current_user.username}}</div>
+					<div><strong>Email:</strong> {{ current_user.email }}</div>
+					<div><strong>Marital status:</strong> {{ current_user.marital_status }}</div>
+				</div>
+				<div>
+					<p><span>Class:</span> {{ overview.get("class_name") }}</p>
+					<p><span>Students Enrolled:</span> {{ overview.get("Student_enrolled") }} </p>
+					<p><span>Schedule:</span> [Monday, ... , Friday]</p>
+					<p>from {{ overview.get("schedule")[0] }}AM - {{ overview.get("schedule")[-1] }}PM</p>
+					<div id="class_id" template-class="{{ cl.id }}"></div>
+				</div>
+	        </div>
+			<div>
+				<div>
+					<h2>Class Announcements and Reminders </h2>
+					</div>
+					{% if announcements %}	
+					   {% for annoucement in announcements %}
+						<div >
+							<div >
+								<div >{{ annoucement.title }}</div>
+								<p >{{ annoucement.content }}</p><br>
+								<span ><strong>Date:</strong>{{ annoucement.created_at }}</span>
+							</div>
+						</div>
+						{% endfor %}
+					{% else %}
+						<div >
+							<div >
+								<div >Coming Soon...</div>
+								<p >no avialaibe annoucements</p><br>
+								<span ><strong>Date:</strong>.........</span>
+							</div>
+						</div>
+					{% endif %}
+				</div>
+	        </div>
+		</header>
+
+		<section id="">
+			<h2>Class Overview</h2>
+			<div>
+				{% for type in insight.get("average_score") %}
+					<div>
+						<p>
+							<span>Average {{ insight.get("average_score")[type][0] }} Score:</span>
+							<span>{{ insight.get("average_score")[type][1] }}%</span>
+						</p>
+						<p>
+							</span>Performance Trend:</span>
+							<span>{{ insight.get("average_score")[type][-1] }}</span>
+						</p>
+					</div>
+				{% else %}
+					<div>
+						<p><span>Average Score:</span><span>Unknown</span></p>
+						<p></span>Performance Trend:</span><span>Unknown</span></p>
+					</div>
+				{% endfor %}
+			</div>
+			<div>
+				<p><strong>Attendance Rate:</strong> {{ attendancerate }}%</p>
+			</div>
+		</section>
+
+		<section id="topPerformingStudents">
+			<h2>Top Performing Students</h2>
+			
+			<!-- Visualization Section: Bar Chart -->
+			<h3>Performance Comparison</h3>
+			<canvas id="performanceChart" width="400" height="200"></canvas>
+			<script>
+				// Code to generate and populate the performance chart (fake data)
+				// This section would typically be JavaScript code.
+			</script>
+		</section>
+
+		<section id="individualPerformance">
+			<h2>Individual Student Performance</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Student Name</th>
+						<th>Grades</th>
+						<th>Attendance</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>John Smith</td>
+						<td>A</td>
+						<td>Present (95%)</td>
+					</tr>
+					<tr>
+						<td>Emily Johnson</td>
+						<td>A</td>
+						<td>Present (98%)</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section id="comparativeAnalysis">
+			<h2>Comparative Analysis</h2>
+			<p>Gender-based Performance:</p>
+			<ul>
+				<li>Male Students: Average Grade - A-</li>
+				<li>Female Students: Average Grade - A</li>
+			</ul>
+		</section>
+
+		<section id="progressTracking">
+			<h2>Progress Tracking</h2>
+			<p>Goals:</p>
+			<ul>
+				<li>John Smith: Target Grade - A</li>
+				<li>Emily Johnson: Target Grade - A</li>
+			</ul>
+			<p>Progress:</p>
+			<ul>
+				<li>John Smith: Current Grade - A</li>
+				<li>Emily Johnson: Current Grade - A</li>
+			</ul>
+		</section>
+
+		<section id="recommendations">
+			<h2>Recommendations and Interventions</h2>
+			<p>For students who need extra help:</p>
+			<ul>
+				<li>Provide additional study materials.</li>
+				<li>Schedule one-on-one tutoring sessions.</li>
+			</ul>
+		</section>
+
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script src="{{ url_for('static', filename='js/teacher/performance.js') }}"></script>
+{% endblock %}

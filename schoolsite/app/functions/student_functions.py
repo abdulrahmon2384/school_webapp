@@ -25,7 +25,7 @@ def fetch_latest_announcements(n: int) -> list:
 def calculate_percentage(total_marks: int, marks_obtained: int) -> float:
 	if total_marks == 0:
 		return 0
-	return (total_marks / marks_obtained) * 100
+	return round((total_marks / marks_obtained) * 100, 1)
 
 
 def fetch_grade(result, grades: dict = grades) -> str:
@@ -215,7 +215,7 @@ def get_student_fullname(student_username):
 	return "Unknown"
 
 
-def get_top_students(data):
+def get_top_students(data, just_gen=True):
 	grouped_data = defaultdict(list)
 	result = {}
 	if data:
@@ -231,13 +231,16 @@ def get_top_students(data):
 
 		result['Male'] = max(grouped_data['Male'])
 		result['Female'] = max(grouped_data['Female'])
-		return result
+		if just_gen:
+			return result
+		return grouped_data
 
 
 def get_total_marks(class_id=None,
                     student_username=None,
                     term=None,
-                    subject=None):
+                    subject=None,
+				    just_gen=True):
 	filters = []
 	if class_id:
 		filters.append(Results.class_id == class_id)
@@ -260,7 +263,9 @@ def get_total_marks(class_id=None,
 	                Results.student_username, Student.gender).order_by(
 	                    func.sum(Results.total_mark).desc()).all()
 
-	top_students = get_top_students(query)
+	top_students = get_top_students(query, just_gen)
+	if just_gen:
+		return top_students
 	return top_students
 
 

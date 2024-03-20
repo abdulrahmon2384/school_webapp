@@ -13,5 +13,230 @@
 {% endblock %}
 
 {% block content %}
-	<h1>Teacher Page</h1>
+    <div>
+		<div>
+			<div id="class_id" template-class="{{ cl.id }}"></div>
+			<div id="current_year" template-year="{{ year }}"></div>
+			<div id="current_term" template-term="{{ terms }}">
+			<h1>Teacher Dashboard </h1>
+		</div>
+		
+		
+		<!-- Class Overview -->
+		<section>
+				<h2>Year/{{ terms }}/Class Overview</h2>
+			</div>
+			<div>
+				<p><span>Class:</span> {{ overview.get("class_name") }}</p>
+				<p><span>Students Enrolled:</span> {{ overview.get("Student_enrolled") }} </p>
+				<p><span>Schedule:</span> [Monday, ... , Friday]</p>
+				<p>from {{ overview.get("schedule")[0] }}AM - {{ overview.get("schedule")[-1] }}PM</p>
+			    <div id="class_id" template-class="{{ cl.id }}"></div>
+			</div>
+		</section>
+		
+		<!-- Performance Insights -->
+		<section>
+			<h2>Performance Insights</h2>
+			<div>
+				{% for type in insight.get("average_score") %}
+					<div>
+						<p>
+						    <span>Average {{ insight.get("average_score")[type][0] }} Score:</span>
+						    <span>{{ insight.get("average_score")[type][1] }}%</span>
+						</p>
+						<p>
+						    </span>Performance Trend:</span>
+				            <span>{{ insight.get("average_score")[type][-1] }}</span>
+					    </p>
+					</div>
+				{% else %}
+					<div>
+						<p><span>Average Score:</span><span>Unknown</span></p>
+						<p></span>Performance Trend:</span><span>Unknown</span></p>
+					</div>
+				{% endfor %}
+			</div>
+			<div>
+				<div>Top Female Student</div>
+				<div>
+					{% if female_student[-1] == 'default.png' %}
+						<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+					{% else %}
+						<img src="{{ female_student[-1] }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+					{% endif %}
+				    {% if female_student %}
+					    <p>Student Name :<span> {{ female_student[0] }}</span></p>
+						<p>Gender: {{ female_student[1] }} </p>
+						<p>Total score: {{ female_student[2] }}</p>
+					{% else %}
+						<p>Student Name :<span> Unknown</span></p>
+						<p>Gender: Unknown </p>
+						<p>Total score: 0</p>
+				    {% endif %}
+				</div>
+			</div>
+			<div>
+				<div>Top Male Student</div>
+				<div>
+					{% if male_student[-1] == 'default.png' %}
+						<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+					{% else %}
+						<img src="{{ male_student[-1] }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+					{% endif %}
+					{% if male_student %}
+					   <p>Student Name :<span> {{ male_student[0] }}</span></p>
+						<p>Gender: {{ male_student[1] }} </p>
+						<p>Total score: {{ male_student[2] }}</p>
+					{% else %}
+						<p>Student Name :<span> Unknown</span></p>
+						<p>Gender: Unknown </p>
+						<p>Total score: 0</p>
+					{% endif %}
+				</div>
+			</div>
+		</section>
+		
+		<!-- Attendance Summary -->
+		<section>
+			<div>
+				<h2>Attendance Summary</h2>
+			</div>
+			{% if summary %}
+			    <div>
+					<p><strong>Overall Attendance Rate:</strong> {{ attendancerate }}%</p>
+				</div>
+			    <div>
+					<div><strong>Frequent Present</strong></div>
+					<div><span>Name :</span><span> {{ most_present[0].get("student_full_name") }}</span></div>
+					<div></span>Percentage :<span> {{ most_present[-1].get("attendance_percentage") }}%</span></div>
+				</div>
+				<div>
+					<div><strong>Frequent Absent</strong></div>
+					<div><span>Name :</span><span> {{ most_absent[0].get("student_full_name") }}</span></div>
+					<div></span>Percentage :<span> {{ most_absent[-1].get("attendance_percentage") }}%</span></div>
+				</div>
+			{% else %}
+				<div>
+					<p><strong>Overall Attendance Rate:</strong> Unknown</p>
+				</div>
+				<div>
+					<div><strong>Frequent Present</strong></div>
+					<div><span>Name :</span><span> Unknown </span></div>
+					<div></span>Percentage :<span> Unknown </span></div>
+				</div>
+				<div>
+					<div><strong>Frequent Absent</strong></div>
+					<div><span>Name :</span><span> Unknown </span></div>
+					<div></span>Percentage :<span> Unknown </span></div>
+				</div>
+			{% endif %}
+		</section>
+		
+		<!-- Upcoming Events and Deadlines -->
+		<section>
+			<h2>Upcoming Events and Deadlines</h2>
+			{% if events %}
+				{% for event in events %}
+				<div >
+					<div >
+						<div ><strong>Event:</strong>{{ event.name }}</div>
+						<span >id{{ event.id }}</span>
+					</div>
+					<span ><strong>Date:</strong>{{ event.date  }}</span>
+				</div>
+				{% endfor %}
+
+			{% else %}
+				<div >
+					<div >
+						<div ><strong>Event:</strong>Comming Soon.......</div>
+						<span >...</span>
+					</div>
+					<span ><strong>Date:</strong>........</span>
+				</div>
+			{% endif %}
+		</section>
+		
+		<!-- Quick Links and Tools -->
+		<section>
+			<div>
+				<h2>Quick Links and Tools</h2>
+			</div>
+			<div>
+				<ul>
+					<li><a href="#">Attendance Tracking</a></li>
+					<li><a href="#">Profile</a></li>
+					<li><a href="#">Update student Result</a></li>
+					<li><a href="#">Student Attendance</a></li>
+				</ul>
+			</div>
+		</section>
+		
+		<!-- Announcements and Reminders -->
+		<section>
+			<h2>Announcements and Reminders </h2>
+			</div>
+			{% if announcements %}	
+			   {% for annoucement in announcements %}
+				<div >
+					<div >
+						<div >{{ annoucement.title }}</div>
+						<p >{{ annoucement.content }}</p><br>
+						<span ><strong>Date:</strong>{{ annoucement.created_at }}</span>
+					</div>
+				</div>
+				{% endfor %}
+			{% else %}
+				<div >
+					<div >
+						<div >Coming Soon...</div>
+						<p >no avialaibe annoucements</p><br>
+						<span ><strong>Date:</strong>.........</span>
+					</div>
+				</div>
+			{% endif %}
+		</section>
+		
+		<!-- Data Visualization -->
+		<section>
+			<h2>Data Visualization</h2>
+			<div >
+				<div style="width: 80%; margin: auto;">
+					<h1 style="text-align: center;">Student Age vs Total Score</h1>
+					<canvas id="scatterPlot" width="800" height="400"></canvas>
+				</div>
+			</div>
+		</section>
+		
+		<!-- User Profile and Settings -->
+		<section>
+			<div>
+				<h2>User Profile and Settings</h2>
+			</div>
+			<div>
+				<div>
+					{% if current_user.image_link == 'default.png' %}
+						<img src="{{ url_for('static', filename='default.png') }}" alt="Default Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+					{% else %}
+						<img src="{{ current_user.image_link }}" alt="User Profile Image" class="w-8 h-8 rounded block object-cover align-middle">
+					{% endif %}
+				</div>
+				<div><strong>Name:</strong> {{ current_user }}</div>
+				<div><strong>Username:</strong>{{ current_user.username}}</div>
+				<div><strong>Email:</strong> {{ current_user.email }}</div>
+				<div><strong>Marital status:</strong> {{ current_user.marital_status }}</div>
+			</div>
+		</section>
+		
+		<!-- Feedback and Support -->
+		<section>
+			<h2>Feedback and Support</h2>
+			<p>If you encounter any issues or have suggestions, please <a href="#">contact support</a>.</p>
+		</section>
+    </div>
+{% endblock %}
+
+{% block script %}
+		  <script src="{{ url_for('static', filename='js/teacher/index.js') }}"></script>
 {% endblock %}
