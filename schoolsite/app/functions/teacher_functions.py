@@ -1,8 +1,8 @@
 from schoolsite.app.models import Announcement, Teacher, Student, Class, Admin, Event, StudentAttendance, TeacherAttendance, TeacherHistory, StudentHistory, Announcement, Results, StudentFee
-from schoolsite.app.functions.student_functions import get_total_marks, fetch_latest_events, fetch_latest_announcements, calculate_percentage
+from schoolsite.app.functions.student_functions import get_total_marks, fetch_latest_events, fetch_latest_announcements, calculate_percentage, fetch_grade, fetch_class_details
 from schoolsite.app import db
 from typing import Dict, Any
-from sqlalchemy import func, distinct, and_
+from sqlalchemy import func, and_, distinct
 from typing import Iterable
 from datetime import datetime
 
@@ -64,7 +64,7 @@ def performance_insight(class_id: str, term: str) -> Dict[str, float]:
 		return {}
 
 
-def get_student_attendance_percentage(student_username: str, present: bool,
+def student_attendance_per(student_username: str, present: bool,
                                       class_id, term) -> Dict[str, Any]:
 	student = Student.query.filter(
 	    Student.username == student_username).first()
@@ -89,7 +89,7 @@ def get_student_attendance_percentage(student_username: str, present: bool,
 		attendance_rate = (absent_records / total_records) * 100
 
 	return {
-	    "student_full_name": student.full_name,
+	    "student_full_name": str(student),
 	    "attendance_percentage": attendance_rate
 	}
 
@@ -146,7 +146,7 @@ def student_attendance_summary(class_id=None,
                                Total=False,
 							   term=None) -> Dict[str, Any]:
 	if student_username:
-		return get_student_attendance_percentage(student_username, present,
+		return student_attendance_per(student_username, present,
 		                                         class_id, term)
 	elif classes:
 		return get_class_attendance_percentage(class_id, present, threshold, n,
@@ -172,35 +172,36 @@ def attendance_summary(class_id: str, term: str) -> Dict[str, Any]:
 	}
 
 
-def fetch_columns(class_id: str) -> Dict[str, Any]:
-	valid_class = Results.query.filter_by(class_id=class_id).first()
+def fetch_columns(class_id: str, username = None) -> Dict[str, Any]:
+	valid_class = Results.query.filter_by(class_id=class_id)
+	if not valid_class.first():
+		return {"error": "Class not found"}
 
-	if valid_class:
-		distinct_years = db.query(distinct(
-		    Results.year).label("Years")).filter(
-		        Results.class_id == class_id).all()
-		distinct_terms = db.query(distinct(
-		    Results.term).label("Terms")).filter(
-		        Results.class_id == class_id).all()
-		distinct_types = db.query(distinct(
-		    Results.result_type).label("Type")).filter(
-		        Results.class_id == class_id).all()
-		distinct_subjects = db.query(
-		    distinct(Results.subject).label("Subjects")).filter(
-		        Results.class_id == class_id).all()
-
-		return {
-		    "Year": distinct_years,
-		    "Term": distinct_terms,
-		    "Type": distinct_types,
-		    "Subject": distinct_subjects
-		}
-	else:
-		return {}
+	distinct_years = Results.query.with_entities(distinct(Results.year).label("Years")).filter(Results.class_id == class_id)
+	distinct_terms = Results.query.with_entities(distinct(Results.term).label("Terms")).filter(Results.class_id == class_id)
+	distinct_types = Results.query.with_entities(distinct(Results.result_type).label("Type")).filter(Results.class_id == class_id)
+	distinct_subjects = Results.query.with_entities(distinct(Results.subject).label("Subjects")).filter(Results.class_id == class_id)
+	
+	if username:
+		valid_student = valid_class.filter_by(student_username=username) 
+		if not valid_student.first():
+			return {"error": "Student not found"}
+			
+		distinct_years = distinct_years.filter(Results.student_username == username)
+		distinct_terms = distinct_terms.filter(Results.student_username == username)
+		distinct_types = distinct_types.filter(Results.student_username == username)
+		distinct_subjects = distinct_subjects.filter(Results.student_username == username)
+		
+	return {
+		"Year": distinct_years.all(),
+		"Term": distinct_terms.all(),
+		"Type": distinct_types.all(),
+		"Subject": distinct_subjects.all()
+	 }
 
 
 def sort_dict_by_value(dictionary):
-	sorted_dict = dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
+	sorted_dict = dict(sorted(dictionary.items(), key=lambda x: x[1][2]))
 	return sorted_dict
 
 
@@ -211,10 +212,18 @@ def calculate_age(birth_date):
 	return age
 
 
-def student_gender(class_id: str, username):
+def student_var(class_id: str, username):
     query = Student.query.filter_by(class_id=class_id, username=username).first()
+    name = str(query)
+    gender = query.gender
     age = calculate_age(query.dob)
-    return [query.gender, age]
+    return [name,  gender, age]
+
+
+
+def image_link(student):
+	query = Student.query.filter_by(username=student).first()
+	return query.image_link
 
 
 
@@ -226,21 +235,35 @@ def fetch_performance_filtering(class_id: str,
 	
     query = Results.query.filter_by(class_id= class_id, term=term, year=year)
     class_ = query.first()
+	
     if not class_:
         print(f"either Class {class_id}, Term {term}, Year {year} not found.")
         return {}
 
-    if result_type:
+    if result_type and result_type != "All":
         query = query.filter_by(result_type=result_type)
     if subject and subject != 'All':
         query = query.filter_by(subject=subject)
 
-    results = (
-		query
-		.with_entities(Results.student_username, func.sum(Results.total_mark))
-		.group_by(Results.student_username)
-		.all()
-		)
-    data = {student: [student] + student_gender(class_id, student) + [total_mark] for student, total_mark in results}
-    res = sort_dict_by_value(data)
-    return res
+    results = (query.with_entities(Results.student_username, 
+								   func.sum(Results.total_mark), 
+								   func.sum(Results.marks_obtain)).group_by(Results.student_username).all())
+    data = {student: student_var(class_id, student) +
+		             [fetch_grade(total_mark, 
+								  marks_obtain)] +
+				     [student_attendance_per(student,
+										    True, 
+										    class_id, 
+										    term).get("attendance_percentage"),
+					  image_link(student),
+					  calculate_percentage(total_mark, marks_obtain),
+					 student]
+		    for student, total_mark , marks_obtain in results}
+    return data
+
+
+def convert_to_valid_dict(input_dict):
+    converted_dict = {}
+    for key, value in input_dict.items():
+        converted_dict[key] = [item[0] for item in value]
+    return converted_dict

@@ -11,6 +11,7 @@ terms = 'third term'
 number_of_event = 4
 number_of_annoucement = 2
 year = '2023'
+table_row = 7
 
 
 @teacher_bp.route('/teachers/dashboard', methods=['GET'])
@@ -61,22 +62,24 @@ def attendance():
 @teacher_bp.route('/teachers/performance', methods=['GET'])
 @login_required
 def performance():
-	page = "Performance"
-	cl = Class.query.filter_by(teacher_username=current_user.username).first()
+    page = "Performance"
+    cl = Class.query.filter_by(teacher_username=current_user.username).first()
 
-	overview = class_overview(cl.id)
-	announcements = fetch_latest_announcements(number_of_annoucement)
-	insight = performance_insight(cl.id, terms)
-	summary = attendance_summary(cl.id, terms)
-
-	attendancerate = summary.get("Overall_class_attendance")
-	return render_template("teacher/performance.html",
+    overview = class_overview(cl.id)
+    announcements = fetch_latest_announcements(number_of_annoucement)
+    insight = performance_insight(cl.id, terms)
+    summary = attendance_summary(cl.id, terms)
+    columns = fetch_columns(cl.id)
+    attendancerate = summary.get("Overall_class_attendance")
+    class_details, teacher = fetch_class_details(cl.id)
+    return render_template("teacher/performance.html",
 	                       page=page,
 	                       cl=cl,
 	                       overview=overview,
 	                       announcements=announcements,
 	                       attendancerate=attendancerate,
-	                       insight=insight)
+	                       insight=insight, columns=columns,
+						  year=year, class_details=class_details, table_row=table_row)
 
 
 @teacher_bp.route('/teachers/update', methods=['GET'])

@@ -28,9 +28,7 @@ def calculate_percentage(total_marks: int, marks_obtained: int) -> float:
 	return round((total_marks / marks_obtained) * 100, 1)
 
 
-def fetch_grade(result, grades: dict = grades) -> str:
-	marks_obtained = result.marks_obtain
-	total_marks = result.total_mark
+def fetch_grade(total_marks, marks_obtained, grades: dict = grades) -> str:
 	percentage = calculate_percentage(total_marks, marks_obtained)
 	for grade, lower_bound in grades.items():
 		upper_bound = lower_bound + 10
@@ -97,7 +95,7 @@ def results_to_dict(obj) -> list:
 	    "result_type":
 	    result.result_type,
 	    "grade":
-	    fetch_grade(result),
+	    fetch_grade(result.total_mark, result.marks_obtain),
 	    "test_scores":
 	    result.total_mark,
 	    "percentage":
