@@ -56,30 +56,48 @@ def dashboard():
 def attendance():
 	page = "Attendance"
 	cl = Class.query.filter_by(teacher_username=current_user.username).first()
-	return render_template("teacher/attendance.html", page=page, cl=cl)
+	date = get_current_date()
+	ds = last_n_session_attended(cl.id, terms,  2)
+	frequent_present = get_class_attendance_percentage(cl.id, True, 60, 3, False,
+	                                               terms)
+	frequent_absent = get_class_attendance_percentage(cl.id, False, 60, 3, False,
+	                                              terms)
+	summary = attendance_summary(cl.id, terms)
+
+	overview = class_overview(cl.id)
+	attendancerate = summary.get("Overall_class_attendance")
+	return render_template("teacher/attendance.html",
+	                       page=page,
+	                       cl=cl,
+	                       date=date,
+	                       attendancerate=attendancerate,
+	                       overview=overview,frequent_present=frequent_present, frequent_absent=frequent_absent, ds=ds)
 
 
 @teacher_bp.route('/teachers/performance', methods=['GET'])
 @login_required
 def performance():
-    page = "Performance"
-    cl = Class.query.filter_by(teacher_username=current_user.username).first()
+	page = "Performance"
+	cl = Class.query.filter_by(teacher_username=current_user.username).first()
 
-    overview = class_overview(cl.id)
-    announcements = fetch_latest_announcements(number_of_annoucement)
-    insight = performance_insight(cl.id, terms)
-    summary = attendance_summary(cl.id, terms)
-    columns = fetch_columns(cl.id)
-    attendancerate = summary.get("Overall_class_attendance")
-    class_details, teacher = fetch_class_details(cl.id)
-    return render_template("teacher/performance.html",
+	overview = class_overview(cl.id)
+	announcements = fetch_latest_announcements(number_of_annoucement)
+	insight = performance_insight(cl.id, terms)
+	summary = attendance_summary(cl.id, terms)
+	columns = fetch_columns(cl.id)
+	attendancerate = summary.get("Overall_class_attendance")
+	class_details, teacher = fetch_class_details(cl.id)
+	return render_template("teacher/performance.html",
 	                       page=page,
 	                       cl=cl,
 	                       overview=overview,
 	                       announcements=announcements,
 	                       attendancerate=attendancerate,
-	                       insight=insight, columns=columns,
-						  year=year, class_details=class_details, table_row=table_row)
+	                       insight=insight,
+	                       columns=columns,
+	                       year=year,
+	                       class_details=class_details,
+	                       table_row=table_row)
 
 
 @teacher_bp.route('/teachers/update', methods=['GET'])

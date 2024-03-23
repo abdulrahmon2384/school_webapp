@@ -7,6 +7,16 @@ from typing import Iterable
 from datetime import datetime
 
 
+
+
+def get_current_date():
+	current_date = datetime.now()
+	formatted_date = current_date.strftime("%B %d, %Y")
+	return formatted_date
+
+
+
+
 def performance_trend(percentage: int) -> str:
 	if percentage >= 90:
 		return "Excellent performance!"
@@ -132,9 +142,13 @@ def get_class_attendance_percentage(class_id: int, present: bool,
 				    "attendance_percentage":
 				    round(attendance_rate,1)
 				})
-        frequent_students.sort(key=lambda x: x["attendance_percentage"],
+        if present:
+            frequent_students.sort(key=lambda x: x["attendance_percentage"],
 		                       reverse=True)
-        return frequent_students[:n]
+        else:
+            frequent_students.sort(key=lambda x: x["attendance_percentage"])
+			
+        return frequent_students[:n] if len(frequent_students) >= n else frequent_students
 
 
 def student_attendance_summary(class_id=None,
@@ -267,3 +281,10 @@ def convert_to_valid_dict(input_dict):
     for key, value in input_dict.items():
         converted_dict[key] = [item[0] for item in value]
     return converted_dict
+
+
+
+def last_n_session_attended(class_id: str, term: str,  n: int) -> Dict[str, Any]:
+	dinstinct_dates = StudentAttendance.query.with_entities(distinct(StudentAttendance.morning_attendance)).filter(StudentAttendance.class_id == class_id, StudentAttendance.term == term).all()
+	last_n = StudentAttendance.query.filter_by(class_id=class_id, term=term, morning_attendance= dinstinct_dates[n-1][0])
+	return last_n.count(), dinstinct_dates[n-1][0]]

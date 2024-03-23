@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}
+		 teacher portal
+{% endblock %}
+
+{% block navbar %}
+{% include "teacher/navbar.html" %}
+{% endblock %}
+
+{% block slicebar %}
+	{% include "teacher/slicebar.html" %}
+{% endblock %}
+
+
+{% block content %}
+    <div>
+		<header>
+			<h1>Attendance Tracking & Marking</h1>
+			<p><strong>Class:</strong> {{ cl.class_name }}</p>
+			<p><strong>Date:</strong> {{ date }}</p>
+		</header>
+
+		<section id="attendance-summary">
+			<div>
+				<div>Attendance Summary: {{ ds }}</div>
+				<div><strong>Total Students:</strong> {{ overview.get("Student_enrolled") }}</div>
+				<div><strong>Total Class Sessions Held:</strong> 3month Above</div>
+				<div><strong>Students Present Last Session:</strong> 25</div>
+				<div><strong>Students Absent Last Session:</strong> 5</div>
+				<div><strong>Overall Attendance Rate:</strong> {{ attendancerate }}%</div>
+			</div>
+		</section>
+
+		<section id="frequent-students">
+			<h2>Frequent Students:</h2>
+			<div class="frequent-present">
+				<h3>Frequent Present Students:</h3>
+				<ul>
+					{% for student in frequent_present %}
+					    <li>{{ student['student_full_name']}} - {{ student['attendance_percentage'] }}</li>
+					{% else %}
+						<li>Student Unknown</li>
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="frequent-absent">
+				<h3>Frequent Absent Students:</h3>
+				<ul>
+					{% for student in frequent_absent %}
+						<li>{{ student['student_full_name'] }} - {{ student['attendance_percentage'] }}</li>
+					{% else %}
+						<li>Not Available ... </li>
+					{% endfor %}
+				</ul>
+			</div>
+		</section>
+
+		<section id="attendance-marking">
+			<h2>Mark Attendance:</h2>
+			<table>
+				<caption>Attendance for Today's Session</caption>
+				<thead>
+					<tr>
+						<th>Student Name</th>
+						<th>Attendance</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Student A</td>
+						<td>Present <input type="checkbox" checked disabled></td>
+					</tr>
+					<tr>
+						<td>Student B</td>
+						<td>Absent <input type="checkbox" disabled></td>
+					</tr>
+					<tr>
+						<td>Student C</td>
+						<td>Present <input type="checkbox" checked disabled></td>
+					</tr>
+					<!-- Additional student rows -->
+				</tbody>
+			</table>
+		</section>
+
+		<section id="calendar-view">
+			<h2>Calendar View Visualization:</h2>
+			<!-- Calendar visualization code can be added here -->
+			<!-- Example: <img src="calendar.jpg" alt="Calendar View"> -->
+		</section>
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script src="{{ url_for('static', filename='js/teacher/attendance.js') }}"></script>
+{% endblock %}

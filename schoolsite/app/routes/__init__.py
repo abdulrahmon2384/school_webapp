@@ -9,7 +9,7 @@ from schoolsite.app.routes.teacher import teacher_bp
 from schoolsite.app.routes.admin import admin_bp
 from schoolsite.app.routes.home import home_bp
 
-routes_bp.register_blueprint(home_bp)
+
 routes_bp.register_blueprint(student_bp)
 routes_bp.register_blueprint(teacher_bp)
 routes_bp.register_blueprint(admin_bp)
